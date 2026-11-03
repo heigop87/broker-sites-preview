@@ -364,4 +364,21 @@ function bot(el){var b=el&&(el.closest('form')||el.closest('div'));var h=b&&b.qu
 function trap(e,el){if(bot(el)){e.preventDefault();e.stopImmediatePropagation();return true}}
 addEventListener('submit',function(e){trap(e,e.target)},true);
 addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('button,a.btn,[type=submit]');if(!a)return;var s=(a.textContent||'').trim();if((a.type==='submit'&&a.closest('form'))||/^(Send|Subscribe|Request|Submit)/.test(s))trap(e,a)},true);
-})()</script></body></html>
+})()</script><style id="hover-video-css">.hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .35s ease;pointer-events:none;border-radius:inherit}.hv.on{opacity:1}</style>
+<script id="hover-video">(function(){var H=["4e5ed129b8041f00fc887e208cd9b4f3","63fd5b2e49327ebdbb52ffe0e7b47b2a","a27b13bcd28b1eb13bb15d404bfe6416","a596f6a78dc2e402064741d92778a773","cb505325a2c9e23186f1d74e97e3d15c","ef2da4d7e58386a9d11d28cacec23484"];if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var mob=/-m\.html$/.test(location.pathname)||matchMedia('(hover: none)').matches;var items=[];
+document.querySelectorAll('img.img').forEach(function(im){var m=(im.getAttribute('src')||'').match(/img\/([0-9a-f]{32})\.webp/);if(!m||H.indexOf(m[1])<0)return;
+ var box=im.parentElement;if(getComputedStyle(box).position==='static')box.style.position='relative';
+ var v=document.createElement('video');v.className='hv';v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='none';v.poster=im.getAttribute('src');v.src='vid/'+m[1]+'.mp4';v.setAttribute('aria-hidden','true');
+ var op=im.style.objectPosition;if(op)v.style.objectPosition=op;box.appendChild(v);
+ var card=im.closest('a,article,[class*=card]')||box.parentElement||box;items.push({v:v,card:card});
+ function play(){var p=v.play();if(p&&p.catch)p.catch(function(){});v.classList.add('on')}
+ function stop(){v.classList.remove('on');v.pause();try{v.currentTime=0}catch(e){}}
+ v._play=play;v._stop=stop;
+ if(!mob){card.addEventListener('mouseenter',play);card.addEventListener('mouseleave',stop);card.addEventListener('focusin',play);card.addEventListener('focusout',stop)}});
+if(mob&&items.length&&'IntersectionObserver' in window){var cur=null;
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target._r=e.intersectionRatio});var best=null,b=.6;items.forEach(function(it){if((it.v._r||0)>=b){b=it.v._r;best=it.v}});
+  if(best!==cur){if(cur)cur._stop();cur=best;if(cur)cur._play()}},{threshold:[0,.25,.5,.6,.75,.9,1]});
+ items.forEach(function(it){io.observe(it.v)})}
+})();</script>
+</body></html>
