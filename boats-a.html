@@ -367,4 +367,12 @@ document.addEventListener('click',function(e){
   if(/^(Get Price Alert|RSVP|Get Your Rate|Get an Insurance Estimate|Download PDF|PDF|Share|Save)$/i.test(s)||/Get Your Rate$/.test(s)||/^(Instagram|LinkedIn|Facebook|YouTube|X)$/i.test(lab)||/^(Privacy|Terms|Cookies|Accessibility)$/i.test(s)){done();toast(PV);return;}
 },true);
 })();
-</script></body></html>
+</script><script id="spam-guard">(function(){var T0=Date.now(),MIN=2500;
+function hp(box){if(!box||box.querySelector('input.hpf'))return;var i=document.createElement('input');i.type='text';i.name='company_website';i.className='hpf';i.tabIndex=-1;i.autocomplete='off';i.setAttribute('aria-hidden','true');i.style.cssText='position:absolute!important;left:-10000px!important;width:1px;height:1px;opacity:0;pointer-events:none';box.appendChild(i)}
+function boxes(){[].forEach.call(document.querySelectorAll('form'),hp);[].forEach.call(document.querySelectorAll('input[type=email]'),function(e){if(!e.closest('form'))hp(e.parentNode)})}
+boxes();addEventListener('DOMContentLoaded',boxes);
+function bot(el){var b=el&&(el.closest('form')||el.closest('div'));var h=b&&b.querySelector('input.hpf');if(!h){var e=b&&b.parentNode&&b.parentNode.querySelector('input.hpf');h=e}return (h&&h.value)||Date.now()-T0<MIN}
+function trap(e,el){if(bot(el)){e.preventDefault();e.stopImmediatePropagation();return true}}
+addEventListener('submit',function(e){trap(e,e.target)},true);
+addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('button,a.btn,[type=submit]');if(!a)return;var s=(a.textContent||'').trim();if((a.type==='submit'&&a.closest('form'))||/^(Send|Subscribe|Request|Submit)/.test(s))trap(e,a)},true);
+})()</script></body></html>
