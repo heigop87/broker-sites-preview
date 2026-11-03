@@ -399,6 +399,9 @@ var WA='https://wa.me/13055550142?text=Hi%20Adrian%2C%20I%20found%20you%20on%20y
   else if(/Powered by|on YachtWay$|^YachtWay$/i.test(s)){a.href='https://www.yachtway.com';a.target='_blank';a.rel='noopener';}
   else if(a.querySelector('img')&&!a.closest('nav')){a.href=LST;}
 });
+(function(){var w=document.querySelector('input[aria-label="Ask Waylo"]');if(!w)return;var sc=w.closest('section')||document;
+[].forEach.call(sc.querySelectorAll('span'),function(sp){var t=sp.textContent.trim();if(sp.children.length||!/\?$/.test(t)||!/border-radius:999px/.test(sp.getAttribute('style')||''))return;
+var b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('style',sp.getAttribute('style')+';border:0;font:inherit;font-size:14px;color:inherit;cursor:pointer;min-height:36px');sp.replaceWith(b);});})();
 function reqForm(){var i=document.querySelector('input[aria-label="Full name"]');return i;}
 function toForm(msg){var i=reqForm();if(!i)return false;var box=i.closest('div[style*="border"]')||i.parentNode;box.scrollIntoView({behavior:'smooth',block:'center'});
   if(msg){var ta=box.querySelector('textarea');if(ta)ta.value=msg;}setTimeout(function(){i.focus({preventScroll:true})},450);return true;}
