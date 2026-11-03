@@ -358,8 +358,11 @@ var WA='https://wa.me/13055550142?text=Hi%20Adrian%2C%20I%20found%20you%20on%20y
   else if(/Powered by|on YachtWay$|^YachtWay$/i.test(s)){a.href='https://www.yachtway.com';a.target='_blank';a.rel='noopener';}
   else if(a.querySelector('img')&&!a.closest('nav')){a.href=LST;}
 });
+(function(){var w=document.querySelector('input[aria-label="Ask Waylo"]');if(!w)return;var sc=w.closest('section')||document;
+[].forEach.call(sc.querySelectorAll('span'),function(sp){var t=sp.textContent.trim();if(sp.children.length||!/\?$/.test(t)||!/border-radius:999px/.test(sp.getAttribute('style')||''))return;
+var b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('style',sp.getAttribute('style')+';border:0;font:inherit;font-size:14px;color:inherit;cursor:pointer;min-height:36px');sp.replaceWith(b);});})();
 function reqForm(){var i=document.querySelector('input[aria-label="Full name"]');return i;}
-function toForm(msg){var i=reqForm();if(!i)return false;var box=i.closest('div[style*="border"]')||i.parentNode;box.scrollIntoView({behavior:'smooth',block:'center'});
+function toForm(msg){var i=reqForm();if(!i)return false;var rq=document.getElementById('rq');if(rq)rq.hidden=false;var box=i.closest('div[style*="border"]')||i.parentNode;box.scrollIntoView({behavior:'smooth',block:'center'});
   if(msg){var ta=box.querySelector('textarea');if(ta)ta.value=msg;}setTimeout(function(){i.focus({preventScroll:true})},450);return true;}
 function chip(b,on){b.style.background=on?'var(--ink)':'var(--surface)';b.style.color=on?'#fff':'var(--ink)';b.style.borderColor=on?'var(--ink)':'var(--line)';b.setAttribute('aria-pressed',on);}
 function cards(){return [].slice.call(p.querySelectorAll('a.card'));}
@@ -400,6 +403,8 @@ document.addEventListener('click',function(e){
   if(lab==='Save'){done();var on=a.getAttribute('aria-pressed')!=='true';a.setAttribute('aria-pressed',on);a.style.color=on?'var(--acc)':'';toast(on?'Saved. Preview only.':'Removed from saved.');return;}
   // subscribe
   if(/^Subscribe$/.test(s)){done();var f=a.closest('form,div'),em=f&&f.querySelector('input');if(!em||!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(em.value.trim())){toast('Add an email address first.');if(em)em.focus();return;}toast('Preview only. Nothing was sent.');return;}
+  if(a.classList.contains('rq-open')){done();toForm();return;}
+  if(a.classList.contains('rq-x')){done();document.getElementById('rq').hidden=true;return;}
   // listing request form
   if(/^Request Info$/i.test(s)){done();var i=reqForm();
     if(i&&a.closest('div')&&a.closest('div[style*="border"]')&&a.closest('div[style*="border"]').contains(i)){var box=a.closest('div[style*="border"]'),miss=[];
@@ -410,7 +415,7 @@ document.addEventListener('click',function(e){
     toForm();return;}
   if(/^(Contact Seller|Ask Adrian|Message Adrian)$/i.test(s)){done();toForm();return;}
   if(/^Schedule a Tour$/i.test(s)){done();toForm('Hi Adrian, I would like to schedule a tour of the 2022 Princess F70. Please send me available times.');return;}
-  if(/Make an Offer/i.test(s)){done();toast('Preview only. EasySign opens on the live site.');return;}
+  if(/^(Request RSVP|Get your rate\. No credit impact\.|Learn More|Report a Mistake|Read More|See All Media|Call|Visit Seller Profile)$/i.test(s)||lab==='Ask Waylo'){done();toast(PV);return;}
   if(/^(Get Price Alert|RSVP|Get Your Rate|Get an Insurance Estimate|Download PDF|PDF|Share|Save)$/i.test(s)||/Get Your Rate$/.test(s)||/^(Instagram|LinkedIn|Facebook|YouTube|X)$/i.test(lab)||/^(Privacy|Terms|Cookies|Accessibility)$/i.test(s)){done();toast(PV);return;}
 },true);
 })();
