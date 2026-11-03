@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
+<title>Broker Site Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Figtree:wght@400;600&display=swap">
+<style>
+:root{--bg:#f4fafb;--surface:#fff;--ink:#1d2020;--mute:#525a5c;--line:#e3e8e9;--soft:#eef7f8;--acc:#105189}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px Figtree,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--surface);border-bottom:1px solid var(--line)}
+header b{font:600 15px Poppins,sans-serif}
+header span{color:var(--mute);font-size:13px}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:999px;margin-left:auto}
+.tabs button{border:0;background:transparent;font:600 13px Figtree,sans-serif;color:var(--mute);padding:8px 16px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.tabs button[aria-pressed=true]{background:var(--surface);color:var(--acc);box-shadow:0 1px 3px rgba(16,81,137,.15)}
+iframe{flex:1;width:100%;border:0;background:var(--bg)}
+@media (max-width:560px){header span{display:none}.tabs{margin-left:0;width:100%;justify-content:space-between}.tabs button{flex:1;padding:8px}}
+</style>
+<header><b>Broker website</b><span>Live preview. Scroll, hover, click.</span>
+<div class="tabs" role="group" aria-label="Template">
+<button data-t="a" aria-pressed="true">Template A</button><button data-t="b" aria-pressed="false">Template B</button><button data-t="c" aria-pressed="false">Template C</button>
+</div></header>
+<iframe id="f" src="a.html" title="Broker website preview"></iframe>
+<script>
+var f=document.getElementById('f'),bs=document.querySelectorAll('.tabs button');
+function go(t){bs.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.t===t)});f.src=t+'.html';if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);}
+bs.forEach(function(b){b.onclick=function(){go(b.dataset.t)}});
+var h=location.hash.slice(1);if(/^[abc]$/.test(h))go(h);
+addEventListener('hashchange',function(){var h=location.hash.slice(1);if(/^[abc]$/.test(h))go(h)});
+</script>
+
+</html>
