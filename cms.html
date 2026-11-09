@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Broker Website CMS</title>
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Figtree:wght@400;500;600&family=DM+Serif+Display&family=Manrope:wght@400;600&family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;600&family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@400;600&family=Archivo:wght@600;700&display=swap">
+<style>
+/* EasySign V2 HIG tokens (hig/tokens.ts), light only */
+:root{
+  --bg:#f2f2f5;--group:#fff;--fill:rgba(118,118,128,.12);--fill2:rgba(118,118,128,.2);
+  --label:#121216;--label2:#727279;--label3:#8c8c92;--sep:rgba(60,60,67,.16);
+  --tint:#4b0ea3;--red:#b42318;--redF:#fee4e2;--orange:#b54708;--orangeF:#fef0c7;
+  --green:#027a48;--greenF:#d1fadf;--blue:#175cd3;--blueF:#d1e9ff;--slate:#363f72;--slateF:#eaecf5;
+  --chrome:rgba(249,249,251,.85);
+  --title:Poppins,system-ui,sans-serif;--text:Figtree,system-ui,sans-serif;
+  --r-ctl:12px;--r-grp:16px;--r-sheet:20px;--tap:44px;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg)}
+body{font:400 17px/22px var(--text);color:var(--label);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit;color:inherit}
+button{border:0;background:transparent;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--label);outline-offset:2px}
+.t1{font:500 28px/34px var(--title);letter-spacing:-.015em}
+.lt{font:500 34px/41px var(--title);letter-spacing:-.02em}
+.t3{font:500 20px/25px var(--title)}
+.hl{font-weight:600}
+.sub{font-size:15px;line-height:20px}
+.fn{font-size:13px;line-height:18px}
+.cap{font-size:12px;line-height:16px}
+.m2{color:var(--label2)}.m3{color:var(--label3)}
+
+/* Shell: sidebar from 1024, tab bar below */
+.app{display:grid;grid-template-columns:1fr;min-height:100vh}
+.rail{display:none}
+@media (min-width:1024px){
+  .app{grid-template-columns:264px 1fr}
+  .rail{display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;padding:20px 12px;background:var(--chrome);border-right:1px solid var(--sep);backdrop-filter:blur(20px)}
+  .tabbar{display:none!important}
+  .topbar{display:none!important}
+}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 12px 20px}
+.brand img{width:28px;height:28px;border-radius:8px}
+.brand b{font:600 17px var(--title)}
+.brand span{display:block;font-size:12px;color:var(--label2);font-weight:400}
+.nav{display:flex;align-items:center;gap:12px;min-height:var(--tap);padding:0 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--label)}
+.nav svg{width:20px;height:20px;color:var(--label2)}
+.nav:hover{background:var(--fill)}
+.nav[aria-current=page]{background:var(--group);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.nav[aria-current=page] svg{color:var(--label)}
+.nav .count{margin-left:auto;font-size:12px;font-weight:600;background:var(--label);color:#fff;border-radius:999px;padding:1px 7px}
+.rail .grow{flex:1}
+.rail .who{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px}
+.rail .who img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));background:var(--chrome);backdrop-filter:blur(20px);border-bottom:1px solid var(--sep)}
+.topbar b{font:600 17px var(--title)}
+.tabbar{position:fixed;inset:auto 0 0 0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px max(6px,env(safe-area-inset-bottom));background:var(--chrome);backdrop-filter:blur(20px);border-top:1px solid var(--sep)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;justify-content:center;font-size:10px;font-weight:500;color:var(--label3);position:relative}
+.tabbar svg{width:24px;height:24px}
+.tabbar a[aria-current=page]{color:var(--label)}
+.tabbar .dot{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;line-height:16px;text-align:center;padding:0 4px}
+
+main{min-width:0;padding:24px 16px 120px}
+@media (min-width:744px){main{padding:32px 32px 120px}}
+@media (min-width:1024px){main{padding:40px 48px 80px}}
+.col{max-width:720px;margin:0 auto}
+.split{display:grid;gap:32px;max-width:1280px;margin:0 auto}
+@media (min-width:1200px){.split{grid-template-columns:minmax(0,1fr) 440px}.split .col{margin:0;max-width:none}}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.head p{margin-top:4px}
+
+/* Grouped sections and rows */
+.sec{margin-bottom:32px}
+.sec>h2{font-size:13px;line-height:18px;font-weight:600;color:var(--label2);text-transform:uppercase;letter-spacing:.04em;padding:0 16px 8px}
+.sec>.foot{font-size:13px;line-height:18px;color:var(--label2);padding:8px 16px 0}
+.grp{background:var(--group);border-radius:var(--r-grp);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;min-height:var(--tap);padding:11px 16px;position:relative;width:100%;text-align:left}
+.row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:1px solid var(--sep)}
+.row.ic+.row::before,.row+.row.ic::before{left:60px}
+button.row:hover,a.row:hover{background:var(--fill)}
+.row .main{flex:1;min-width:0}
+.row .main .t{font-size:17px;line-height:22px}
+.row .main .d{font-size:15px;line-height:20px;color:var(--label2);margin-top:1px;overflow:hidden;text-overflow:ellipsis}
+.row .trail{display:flex;align-items:center;gap:8px;color:var(--label2);font-size:15px;flex:0 0 auto}
+.chev{width:8px;height:14px;color:var(--label3)}
+.ico{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;background:var(--fill)}
+.ico svg{width:18px;height:18px}
+.thumb{width:64px;height:44px;border-radius:8px;object-fit:cover;flex:0 0 auto;background:var(--fill)}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:0 0 auto}
+.initial{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--slateF);color:var(--slate);font-weight:600;font-size:15px;flex:0 0 auto}
+
+/* Controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:0 20px;border-radius:var(--r-ctl);font-size:17px;font-weight:600;white-space:nowrap}
+.btn svg{width:18px;height:18px}
+.btn.pri{background:var(--label);color:#fff}
+.btn.pri:hover{background:#2c2c33}
+.btn.sec{background:var(--fill);color:var(--label)}
+.btn.sec:hover{background:var(--fill2)}
+.btn.plain{padding:0 8px;color:var(--label);font-weight:600}
+.btn.red{color:var(--red)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:15px;border-radius:10px}
+.btn[disabled]{opacity:.4;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;line-height:16px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.b-green{background:var(--greenF);color:var(--green)}.b-orange{background:var(--orangeF);color:var(--orange)}
+.b-blue{background:var(--blueF);color:var(--blue)}.b-slate{background:var(--slateF);color:var(--slate)}.b-red{background:var(--redF);color:var(--red)}
+.b-gray{background:var(--fill);color:var(--label2)}
+.sw{position:relative;width:51px;height:31px;flex:0 0 auto;appearance:none;-webkit-appearance:none;background:var(--fill2);border-radius:16px;cursor:pointer;transition:background .2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .2s}
+.sw:checked{background:var(--green)}
+.sw:checked::after{transform:translateX(20px)}
+.sw:disabled{opacity:.5;cursor:default}
+.seg{display:inline-flex;background:var(--fill);border-radius:10px;padding:2px;gap:2px}
+.seg button{min-height:32px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:600;color:var(--label)}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.field{display:block;padding:10px 16px}
+.field+.field{border-top:1px solid var(--sep)}
+.field label,.field .lbl{display:block;font-size:13px;line-height:18px;color:var(--label2);margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%;border:0;background:transparent;font-size:17px;line-height:22px;padding:2px 0;outline:0;resize:vertical}
+.field textarea{min-height:120px}
+.field .hint{font-size:13px;line-height:18px;color:var(--label2);margin-top:4px}
+.field .hint.ok{color:var(--green)}.field .hint.bad{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}
+.chip{min-height:36px;padding:0 14px;border-radius:999px;background:var(--fill);font-size:15px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed=true]{background:var(--label);color:#fff}
+.chip svg{width:14px;height:14px}
+
+/* Cards */
+.card{background:var(--group);border-radius:var(--r-grp);padding:20px}
+.cards{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+@media (min-width:744px){.cards{grid-template-columns:repeat(4,1fr)}}
+.stat .n{font:500 28px/34px var(--title);letter-spacing:-.015em;margin-top:4px}
+.stat .d{font-size:13px;color:var(--green);font-weight:600;margin-top:2px}
+.live{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.live .url{flex:1;min-width:200px}
+.live .url b{font-size:17px;word-break:break-all}
+.progress{height:6px;border-radius:3px;background:var(--fill);overflow:hidden;margin:12px 0 4px}
+.progress i{display:block;height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+
+/* Templates */
+.tpls{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:600px){.tpls{grid-template-columns:repeat(3,1fr)}}
+.tpl{background:var(--group);border-radius:var(--r-grp);overflow:hidden;text-align:left;border:2px solid transparent;transition:border-color .15s}
+.tpl[aria-pressed=true]{border-color:var(--label)}
+.tpl .shot{position:relative;height:200px;overflow:hidden;background:var(--fill);pointer-events:none}
+.tpl .shot iframe{position:absolute;top:0;left:0;width:1280px;height:1000px;border:0;transform:scale(.27);transform-origin:0 0}
+@media (max-width:599px){.tpl .shot{height:220px}.tpl .shot iframe{width:390px;height:900px;transform:scale(.6)}}
+.tpl .meta{padding:12px 16px 14px;display:flex;align-items:center;gap:8px}
+.tpl .meta b{font-size:17px}
+.tpl .meta span{font-size:13px;color:var(--label2);display:block}
+.tick{margin-left:auto;flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--label);color:#fff;visibility:hidden}
+.tick svg{width:14px;height:14px}
+[aria-pressed=true] .tick{visibility:visible}
+.fonts{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+@media (min-width:744px){.fonts{grid-template-columns:repeat(3,1fr)}}
+.font{background:var(--group);border-radius:var(--r-grp);padding:16px;text-align:left;border:2px solid transparent;min-height:120px;display:flex;flex-direction:column;position:relative}
+.font[aria-pressed=true]{border-color:var(--label)}
+.font .h{font-size:24px;line-height:28px;margin-bottom:6px}
+.font .p{font-size:14px;line-height:19px;color:var(--label2)}
+.font .n{margin-top:auto;padding-top:10px;font-size:13px;font-weight:600}
+.font .tick{position:absolute;top:12px;right:12px}
+
+/* Preview pane */
+.pv{position:sticky;top:40px;align-self:start;display:none}
+@media (min-width:1200px){.pv{display:block}}
+.pv .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.frame{background:var(--group);border-radius:var(--r-grp);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.frame.desk{height:calc(100vh - 140px)}
+.frame.desk iframe{width:1280px;height:calc((100vh - 140px) / .34375);transform:scale(.34375);transform-origin:0 0;border:0;display:block}
+.frame.mob{width:300px;height:calc(100vh - 140px);max-height:640px;margin:0 auto;border-radius:32px;border:8px solid #121216}
+.frame.mob iframe{width:390px;height:calc((100vh - 156px) / .7436);max-height:840px;transform:scale(.7436);transform-origin:0 0;border:0;display:block}
+
+/* Sheets */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:var(--bg);width:100%;max-height:92vh;border-radius:var(--r-sheet) var(--r-sheet) 0 0;display:flex;flex-direction:column;animation:up .28s cubic-bezier(.32,.72,0,1)}
+@media (min-width:744px){.scrim{align-items:center}.sheet{max-width:600px;border-radius:var(--r-sheet);max-height:86vh}}
+.sheet.full{max-width:none;height:100%;max-height:none;border-radius:0}
+@media (min-width:744px){.sheet.full{max-width:1100px;height:92vh;border-radius:var(--r-sheet)}}
+.sheet header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 8px;border-bottom:1px solid var(--sep)}
+.sheet header b{font-size:17px;font-weight:600;text-align:center}
+.sheet header .r{justify-self:end}
+.sheet .body{overflow:auto;padding:20px 16px 32px;flex:1}
+.sheet .body>.sec:last-child{margin-bottom:0}
+@media (min-width:744px){.sheet .body{padding:24px}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Setup wizard */
+.wiz{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column}
+.wiz header{display:flex;align-items:center;gap:12px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));border-bottom:1px solid var(--sep);background:var(--chrome);backdrop-filter:blur(20px)}
+.wiz header .steps{flex:1;display:flex;gap:6px;max-width:320px;margin:0 auto}
+.wiz header .steps i{flex:1;height:4px;border-radius:2px;background:var(--fill2)}
+.wiz header .steps i.on{background:var(--label)}
+.wiz .body{flex:1;overflow:auto;padding:28px 16px 40px}
+.wiz .body .col{max-width:640px}
+.wiz footer{display:flex;gap:12px;justify-content:space-between;padding:12px 16px max(12px,env(safe-area-inset-bottom));border-top:1px solid var(--sep);background:var(--chrome);backdrop-filter:blur(20px)}
+.wiz footer .btn.pri{flex:1;max-width:320px;margin-left:auto}
+.kicker{font-size:13px;font-weight:600;color:var(--label2);margin-bottom:6px}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:60;background:var(--label);color:#fff;font-size:15px;font-weight:500;padding:10px 18px;border-radius:999px;animation:up .25s}
+@media (min-width:1024px){.toast{bottom:32px}}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px;padding:16px 4px 0}
+.bars i{flex:1;background:var(--label);border-radius:4px 4px 2px 2px;min-height:3px;opacity:.85}
+.bars i:last-child{opacity:1}
+.axis{display:flex;justify-content:space-between;font-size:12px;color:var(--label3);padding:6px 4px 0}
+.quote{font-size:17px;line-height:24px;padding:12px 16px 16px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;padding:12px 16px;font-size:15px}
+.kv dt{color:var(--label2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail" aria-label="Website">
+    <div class="brand"><img src="favicon.png" alt=""><div><b>My website</b><span>YachtWay</span></div></div>
+    <div id="railNav"></div>
+    <div class="grow"></div>
+    <a class="nav" id="railLive" target="_blank" rel="noopener"></a>
+    <div class="who"><img src="img/e03f1e2e46ddd9795477f0acc4f5c009.webp" alt=""><div><div class="sub hl">Adrian Cole</div><div class="cap m2">APEX Yacht Group</div></div></div>
+  </nav>
+  <div>
+    <div class="topbar"><b id="topTitle">My website</b><a class="btn sec sm" id="topLive" target="_blank" rel="noopener">View page</a></div>
+    <main id="view"></main>
+  </div>
+  <nav class="tabbar" id="tabbar" aria-label="Website"></nav>
+</div>
+<div id="layer"></div>
+
+<script>
+/* ---------- Icons (no anchor or boat glyphs) ---------- */
+const I = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  edit:'<rect x="3" y="3" width="18" height="7" rx="1.5"/><rect x="3" y="14" width="8" height="7" rx="1.5"/><rect x="15" y="14" width="6" height="7" rx="1.5"/>',
+  look:'<path d="M4 20 10 4h4l6 16"/><path d="M7.2 13.5h9.6"/>',
+  store:'<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18"/><path d="M9.5 20v-5h5v5"/>',
+  msg:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  chart:'<path d="M4 20V11"/><path d="M10 20V5"/><path d="M16 20v-8"/><path d="M21 20H3"/>',
+  set:'<path d="M4 7h9"/><path d="M17 7h3"/><circle cx="15" cy="7" r="2"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="9" cy="17" r="2"/>',
+  ext:'<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  wa:'<path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5z"/><path d="M9 8.5c0 3.5 2.5 6 6 6l1-1.5-2-1-1 .8a4 4 0 0 1-2.3-2.3l.8-1-1-2z"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
+  photo:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-8 8"/>',
+  doc:'<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  text:'<path d="M5 6h14M5 12h14M5 18h9"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  cam:'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  quote:'<path d="M9 7H5v6h4v-6zM9 13c0 2-1 3-3 4M19 7h-4v6h4v-6zM19 13c0 2-1 3-3 4"/>',
+  play:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+};
+const svg = (n, s='') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${s}>${I[n]}</svg>`;
+const chev = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m1 1 6 6-6 6"/></svg>';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const words = t => t.trim() ? t.trim().split(/\s+/).length : 0;
+
+/* ---------- Sample data (matches the three templates) ---------- */
+const IMG = 'img/';
+const TEMPLATES = {
+  a:{name:'Template A',body:'Big headline, cover photo, featured boat up top.',headline:'Find the right boat with Adrian.'},
+  b:{name:'Template B',body:'Full-width cover, boats first, clean list.',headline:'Boats for sale with Adrian.'},
+  c:{name:'Template C',body:'Compact profile card, your name leads.',headline:null},
+};
+const FONTS = {
+  modern:{name:'Modern',h:'Poppins',b:'Figtree'},
+  classic:{name:'Classic',h:'DM Serif Display',b:'Manrope'},
+  editorial:{name:'Editorial',h:'Cormorant Garamond',b:'Inter'},
+  clean:{name:'Clean',h:'Inter',b:'Inter'},
+  coastal:{name:'Coastal',h:'Playfair Display',b:'Source Sans 3'},
+  bold:{name:'Bold',h:'Archivo',b:'Figtree'},
+};
+const SERVICES = {selling:'Selling your boat',buying:'Finding your next boat',new_builds:'New builds',trade_ins:'Trade-ins',after_sales:'After-sales care',charter:'Charter',charter_management:'Charter management',yacht_management:'Yacht management',financing_help:'Help with financing',surveys_sea_trials:'Surveys and sea trials',crew_placement:'Crew placement',delivery:'Delivery'};
+const PROFILE = {
+  name:'Adrian Cole',first:'Adrian',photo:IMG+'e03f1e2e46ddd9795477f0acc4f5c009.webp',
+  company:'APEX Yacht Group',license:'ABC-1235',languages:'English, French, Dutch',
+  address:'1450 Brickell Bay Drive, Suite 210, Miami, FL 33131',
+  phone:'+1 (305) 555-0142',email:'adrian@apexyachtgroup.com',
+};
+const DEFAULTS = () => ({
+  published:false, setupDone:false, slug:'adrian-cole', domain:null, domainStatus:null,
+  template:'a', font:'modern',
+  headline:TEMPLATES.a.headline,
+  intro:'120 boats sold since 2018. Every listing checked and walked in person.',
+  bio:'',
+  areas:'Miami, Fort Lauderdale, Palm Beach',
+  stats:{sold:true,years:true,listed:true,rating:true},
+  sections:{featured:true,reviews:true,services:true,shows:true,videos:false},
+  services:['selling','buying','new_builds','trade_ins','after_sales'], custom:[],
+  featuredNote:'',
+  boats:[
+    {id:1,name:'2022 Princess F70',price:3250000,loc:'Miami, FL',len:70,img:'a27b13bcd28b1eb13bb15d404bfe6416.webp',on:true,featured:true,photos:'imported',count:48},
+    {id:2,name:'2020 Azimut 77S',price:3150000,loc:'Palm Beach, FL',len:77,img:'4e5ed129b8041f00fc887e208cd9b4f3.webp',on:true,photos:'imported',count:62},
+    {id:3,name:'2019 Sunseeker Predator 63',price:1690000,loc:'Miami Beach, FL',len:63,img:'a596f6a78dc2e402064741d92778a773.webp',on:true,photos:'queued',count:0},
+    {id:4,name:'2023 Azimut 62',price:2450000,loc:'Fort Lauderdale, FL',len:62,img:'63fd5b2e49327ebdbb52ffe0e7b47b2a.webp',on:true,photos:null,count:0},
+    {id:5,name:'2022 Viking 54SC',price:2195000,loc:'Palm Beach, FL',len:54,img:'ef2da4d7e58386a9d11d28cacec23484.webp',on:true,photos:'imported',count:35},
+    {id:6,name:'2021 Sunseeker 80',price:3950000,loc:'Fort Lauderdale, FL',len:80,img:'cb505325a2c9e23186f1d74e97e3d15c.webp',on:false,photos:null,count:0},
+  ],
+  reviews:[
+    {id:1,name:'Sophie van Dijk',boat:'Bought a Riva 76 Perseo',text:'Adrian found the boat, booked the survey and had every document ready. We closed in three weeks.',on:true},
+    {id:2,name:'Mark Ellison',boat:'Sold a Viking 58',text:'Priced right from day one. Two showings, one offer, done.',on:true},
+    {id:3,name:'Laura Chen',boat:'Bought a Princess S62',text:'Calm, clear and always on the dock before us.',on:false},
+  ],
+  shows:[
+    {id:1,name:'boot Düsseldorf',dates:'23 to 31 January 2027',city:'Düsseldorf, Germany',booth:'412',booking:true},
+    {id:2,name:'Miami International Boat Show',dates:'10 to 14 February 2027',city:'Miami Beach, FL',booth:'C-218',booking:true},
+    {id:3,name:'Palm Beach International Boat Show',dates:'17 to 21 March 2027',city:'West Palm Beach, FL',booth:'PB-307',booking:false},
+  ],
+  contact:{whatsapp:'+1 305 555 0142',hours:'Monday to Friday, 9:00 AM to 5:00 PM'},
+  socials:{instagram:'instagram.com/adriancole.yachts',linkedin:'linkedin.com/in/adriancole',facebook:'',youtube:'youtube.com/@adriancoleyachts'},
+  videos:[{url:'https://youtu.be/dQw4w9WgXcQ',title:'Walkthrough: 2022 Princess F70'}],
+  leads:[
+    {id:1,name:'James Porter',type:'sell',when:'12 min ago',unread:true,msg:'Looking to sell my boat this spring. Can you give me an idea of price?',boat:{year:2018,make:'Sea Ray',model:'L650 Fly',hours:'740',engines:'Twin Cummins QSM11'},email:'james.porter@example.com',phone:'+1 954 555 0190'},
+    {id:2,name:'Elena Rossi',type:'buy',when:'2 h ago',unread:true,msg:'Is the Princess F70 still available? We would like to see her this weekend.',about:'2022 Princess F70',email:'elena.rossi@example.com',phone:'+1 786 555 0133'},
+    {id:3,name:'Tom Becker',type:'buy',when:'Yesterday',unread:false,msg:'Searching for a 60 to 70 ft flybridge under $2.5M for the Bahamas.',email:'tom.becker@example.com',phone:'+1 561 555 0122'},
+    {id:4,name:'Priya Nair',type:'other',when:'Mon',unread:false,msg:'Do you handle charter management for a 54 ft Viking?',email:'priya.nair@example.com',phone:''},
+  ],
+  vatoUsed:1,
+});
+let S;
+try { S = Object.assign(DEFAULTS(), JSON.parse(localStorage.getItem('bs-cms') || '{}')); } catch { S = DEFAULTS(); }
+const save = () => { try { localStorage.setItem('bs-cms', JSON.stringify(S)); } catch {} };
+const money = n => '$' + n.toLocaleString('en-US');
+const pageUrl = () => S.domain && S.domainStatus === 'active' ? S.domain : 'yachtway.com/' + S.slug;
+
+/* ---------- Publish checklist (same gate as the FE build) ---------- */
+const checklist = () => [
+  {k:'Name and address',ok:!!PROFILE.address,go:'#edit/profile'},
+  {k:'Company and logo',ok:true,go:'#edit/profile'},
+  {k:'Your photo',ok:!!PROFILE.photo,go:'#edit/profile'},
+  {k:'At least one boat on your page',ok:S.boats.some(b=>b.on),go:'#boats'},
+  {k:'Services',ok:S.services.length+S.custom.length>0,go:'#edit/services'},
+  {k:'Bio of 40 words or more',ok:words(S.bio)>=40,go:'#edit/about'},
+];
+
+/* ---------- Navigation ---------- */
+const NAV = [
+  ['home','Home','home'],['edit','Edit page','edit'],['look','Look','look'],['boats','Boats','store'],
+  ['messages','Messages','msg'],['stats','Analytics','chart'],['settings','Address and domain','set'],
+];
+const TABS = ['home','edit','look','boats','messages'];
+const route = () => (location.hash.slice(1) || 'home').split('/');
+function chrome(){
+  const [r] = route(), unread = S.leads.filter(l=>l.unread).length;
+  document.getElementById('railNav').innerHTML = NAV.map(([k,t,i]) =>
+    `<a class="nav" href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${t}${k==='messages'&&unread?`<span class="count">${unread}</span>`:''}</a>`).join('');
+  document.getElementById('tabbar').innerHTML = TABS.map(k => { const [,t,i] = NAV.find(n=>n[0]===k);
+    return `<a href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${k==='edit'?'Edit':t}${k==='messages'&&unread?`<span class="dot">${unread}</span>`:''}</a>`; }).join('');
+  const live = document.getElementById('railLive'), top = document.getElementById('topLive');
+  live.innerHTML = `${svg('ext')}View my page`; live.href = top.href = S.template + '.html';
+  document.getElementById('topTitle').textContent = (NAV.find(n=>n[0]===r)||NAV[0])[1];
+}
+
+/* ---------- Row helpers ---------- */
+const row = ({t,d,trail='',ic,img,href,on,attrs=''}) => {
+  const lead = ic ? `<span class="ico">${svg(ic)}</span>` : img ? img : '';
+  const tag = href ? 'a' : on ? 'button' : 'div';
+  return `<${tag} class="row${ic?' ic':''}" ${href?`href="${href}"`:''} ${on?`data-on="${on}"`:''} ${attrs}>${lead}<span class="main"><span class="t">${t}</span>${d?`<span class="d" style="display:block">${d}</span>`:''}</span><span class="trail">${trail}${href||on?chev:''}</span></${tag}>`;
+};
+const toggle = (key, checked, label, disabled) => `<input type="checkbox" class="sw" data-tg="${key}" ${checked?'checked':''} ${disabled?'disabled':''} aria-label="${esc(label)}">`;
+const sec = (h, inner, foot) => `<section class="sec">${h?`<h2>${h}</h2>`:''}<div class="grp">${inner}</div>${foot?`<p class="foot">${foot}</p>`:''}</section>`;
+
+/* ---------- Views ---------- */
+const V = {};
+
+V.home = () => {
+  const list = checklist(), done = list.filter(c=>c.ok).length, unread = S.leads.filter(l=>l.unread);
+  const top = S.published
+    ? `<div class="card live" style="margin-bottom:32px"><div class="url"><span class="badge b-green" style="margin-bottom:8px">${svg('check','width="12" height="12"')}Live</span><div class="fn m2">Your page is live at</div><b>${esc(pageUrl())}</b></div><div class="btns"><button class="btn sec sm" data-act="copy">${svg('copy')}Copy link</button><a class="btn pri sm" href="${S.template}.html" target="_blank" rel="noopener">View page</a></div></div>`
+    : `<div class="card" style="margin-bottom:32px"><div class="kicker">Set up your page</div><div class="t3">${done} of ${list.length} done. About 2 minutes left.</div><div class="progress"><i style="width:${done/list.length*100}%"></i></div><p class="sub m2" style="margin:8px 0 16px">We filled in what we already know from your YachtWay profile. Check it, pick a look and publish.</p><a class="btn pri" href="#setup">${S.setupDone?'Continue setup':'Start setup'}</a></div>`;
+  return `<div class="col">
+    <div class="head"><div><h1 class="lt">Hi ${PROFILE.first}</h1><p class="sub m2">Your broker website. Edit it any time.</p></div></div>
+    ${top}
+    <section class="sec"><h2>Last 7 days</h2><div class="cards">
+      ${[['Visitors','1,284','+18%'],['Messages','23','+6'],['Calls and WhatsApp','41','+12'],['Boat views','3,906','+9%']].map(([k,n,d])=>`<a class="card stat" href="#stats"><div class="fn m2">${k}</div><div class="n">${n}</div><div class="d">${d}</div></a>`).join('')}
+    </div></section>
+    ${sec(`New messages`, unread.length ? unread.map(l=>row({t:esc(l.name),d:esc(l.msg),img:`<span class="initial">${l.name.split(' ').map(w=>w[0]).join('')}</span>`,trail:leadBadge(l)+`<span class="fn m3">${l.when}</span>`,on:'lead:'+l.id})).join('') : row({t:'No new messages',d:'New messages from your page show here and in your email.'}), `<a href="#messages" class="hl" style="color:var(--label)">See all messages</a>`)}
+    ${S.published ? '' : sec('Before you publish', list.map(c=>row({t:c.k,trail:c.ok?`<span class="badge b-green">Done</span>`:`<span class="badge b-orange">To do</span>`,href:c.go})).join(''), 'Google sees your page once every item is done.')}
+    ${sec('Quick edits', [
+      row({t:'Headline and intro',d:esc(S.headline||PROFILE.name),ic:'text',href:'#edit/hero'}),
+      row({t:'Boats on your page',d:`${S.boats.filter(b=>b.on).length} of ${S.boats.length} showing`,ic:'store',href:'#boats'}),
+      row({t:'Template and font',d:`${TEMPLATES[S.template].name}, ${FONTS[S.font].name}`,ic:'look',href:'#look'}),
+      row({t:'Boat shows',d:`${S.shows.length} upcoming`,ic:'cal',href:'#edit/shows'}),
+    ].join(''))}
+    ${sec('Grow your page', [
+      row({t:'Ads to people who visited your page',d:'Show your boats again on Google, Instagram and Facebook.',ic:'target',trail:'<span class="badge b-gray">Coming soon</span>'}),
+      row({t:'Book a photoshoot',d:'Photos, video and a 3D Tour for a listing.',ic:'cam',on:'photoshoot'}),
+      row({t:'Your own domain',d:S.domain?esc(S.domain):'yourname.com for $49 a year.',ic:'globe',href:'#settings'}),
+    ].join(''))}
+    ${sec('More', [row({t:'Analytics',ic:'chart',href:'#stats'}),row({t:'Address and domain',ic:'set',href:'#settings'}),row({t:'Start setup again',ic:'grid',href:'#setup'})].join(''))}
+  </div>`;
+};
+
+const leadBadge = l => l.type==='sell' ? '<span class="badge b-green">Selling</span>' : l.type==='buy' ? '<span class="badge b-blue">Buying</span>' : '<span class="badge b-slate">Other</span>';
+
+/* Edit page: the page order is fixed; optional sections can be hidden */
+const SECTIONS = [
+  {k:'hero',t:'Top of page',d:()=>esc(S.headline || PROFILE.name),ic:'text',fixed:true},
+  {k:'featured',t:"Today's pick",d:()=>{const f=S.boats.find(b=>b.featured);return f?esc(f.name):'No boat picked'},ic:'star'},
+  {k:'boats',t:'Boats for sale',d:()=>`${S.boats.filter(b=>b.on).length} boats showing`,ic:'store',fixed:true,href:'#boats'},
+  {k:'about',t:'About you',d:()=>words(S.bio)?`${words(S.bio)} words`:'Bio not written yet',ic:'user',fixed:true},
+  {k:'reviews',t:'Reviews',d:()=>`${S.reviews.filter(r=>r.on).length} showing`,ic:'quote'},
+  {k:'services',t:'Services',d:()=>`${S.services.length+S.custom.length} services`,ic:'grid'},
+  {k:'shows',t:'Boat shows',d:()=>`${S.shows.length} shows`,ic:'cal'},
+  {k:'videos',t:'Videos',d:()=>`${S.videos.length} video${S.videos.length===1?'':'s'}`,ic:'play'},
+  {k:'contact',t:'Contact',d:()=>'Phone, email, WhatsApp and hours',ic:'phone',fixed:true},
+];
+V.edit = () => `<div class="split"><div class="col">
+  <div class="head"><div><h1 class="lt">Edit page</h1><p class="sub m2">Sections stay in this order. Turn off the ones you do not need.</p></div></div>
+  ${sec('Sections', SECTIONS.map(s => {
+    const vis = s.fixed ? '<span class="fn m3">Always on</span>' : toggle('sections.'+s.k, S.sections[s.k], 'Show '+s.t);
+    return `<div class="row ic"><span class="ico">${svg(s.ic)}</span><a class="main" href="${s.href||'#edit/'+s.k}"><span class="t" style="display:block">${s.t}</span><span class="d" style="display:block">${s.d()}</span></a><span class="trail">${vis}<a href="${s.href||'#edit/'+s.k}" aria-label="Edit ${s.t}" style="display:grid;place-items:center;width:28px;height:44px">${chev}</a></span></div>`;
+  }).join(''), 'Your name, photo, company, license and languages come from your YachtWay profile.')}
+  ${sec('From your profile', [
+    row({t:PROFILE.name,d:`${PROFILE.company} · License ${PROFILE.license}`,img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,href:'#edit/profile'}),
+  ].join(''))}
+</div>${preview()}</div>`;
+
+/* Section editors open as sheets over the Edit page */
+const EDITORS = {
+  profile: () => ({title:'From your profile', body:
+    sec('', [['Name',PROFILE.name],['Company',PROFILE.company],['License',PROFILE.license],['Languages',PROFILE.languages],['Office address',PROFILE.address],['Phone',PROFILE.phone],['Email',PROFILE.email]].map(([k,v])=>row({t:k,trail:`<span class="sub">${esc(v)}</span>`})).join(''),
+      'These come from your YachtWay profile so they match everywhere. Change them in profile settings.')
+    + `<a class="btn sec" style="width:100%" href="#" data-act="toast:Opens profile settings">Edit in profile settings</a>`}),
+  hero: () => ({title:'Top of page', body:
+    sec('Headline', `<div class="field"><label for="f-headline">Headline</label><input id="f-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}" ${S.template==='c'?'disabled':''}><div class="hint">${S.template==='c'?'Template C leads with your name, so it has no headline.':`${(S.headline||'').length} of 60 characters`}</div></div>
+      <div class="field"><label for="f-intro">Intro line</label><textarea id="f-intro" data-f="intro" maxlength="140" style="min-height:72px">${esc(S.intro)}</textarea><div class="hint">One or two short sentences.</div></div>
+      <div class="field"><label for="f-areas">Areas you cover</label><input id="f-areas" data-f="areas" value="${esc(S.areas)}"><div class="hint">Separate with commas.</div></div>`)
+    + sec('Numbers under the headline', [['sold','Boats sold','120'],['years','Years in the industry','8'],['listed','Boats listed now',String(S.boats.filter(b=>b.on).length)],['rating','Client rating','4.9']].map(([k,t,v])=>row({t,d:v,trail:toggle('stats.'+k,S.stats[k],t)})).join(''),'Numbers come from your YachtWay record. You choose which ones show.')}),
+  featured: () => ({title:"Today's pick", body:
+    sec('Boat', S.boats.filter(b=>b.on).map(b=>`<button class="row" data-feat="${b.id}"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${b.featured?`<span class="tick" style="visibility:visible">${svg('check')}</span>`:''}</span></button>`).join(''))
+    + sec('Your note', `<div class="field"><label for="f-note">Why this boat is worth a look</label><input id="f-note" data-f="featuredNote" maxlength="120" placeholder="Fresh service, one owner, ready for the Bahamas." value="${esc(S.featuredNote)}"><div class="hint">One line.</div></div>`)}),
+  about: () => { const w = words(S.bio); return {title:'About you', body:
+    sec('Bio', `<div class="field"><label for="f-bio">About you</label><textarea id="f-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`, 'Google sees your page once the bio has 40 words or more.')
+    + `<button class="btn sec" style="width:100%" data-act="bio">Write a first draft for me</button>`
+    + `<div style="height:24px"></div>` + sec('From your profile', [['License',PROFILE.license],['Languages',PROFILE.languages],['Brokerage',PROFILE.company]].map(([k,v])=>row({t:k,trail:`<span class="sub">${v}</span>`})).join(''))}; },
+  reviews: () => ({title:'Reviews', body:
+    sec('Pick which reviews show', S.reviews.map(r=>`<div class="row" style="align-items:flex-start"><span class="main"><span class="t" style="display:block">${esc(r.name)}</span><span class="d" style="display:block;white-space:normal">"${esc(r.text)}"</span><span class="fn m3" style="display:block;margin-top:4px">${esc(r.boat)}</span></span><span class="trail">${toggle('review.'+r.id,r.on,'Show review from '+r.name)}</span></div>`).join(''), 'Reviews come from buyers and sellers on YachtWay. You cannot edit their words.')
+    + `<button class="btn sec" style="width:100%" data-act="toast:Review request link copied">${svg('link')}Ask a client for a review</button>`}),
+  services: () => ({title:'Services', body:
+    sec('Tap everything you do', `<div class="chips">${Object.entries(SERVICES).map(([k,t])=>`<button class="chip" data-svc="${k}" aria-pressed="${S.services.includes(k)}">${S.services.includes(k)?svg('check'):''}${t}</button>`).join('')}${S.custom.map((t,i)=>`<button class="chip" data-cust="${i}" aria-pressed="true" aria-label="Remove ${esc(t)}">${esc(t)} ${svg('x')}</button>`).join('')}</div>`)
+    + sec('Something else?', `<div class="row"><input id="f-cust" placeholder="Type a service" style="flex:1;border:0;outline:0;font-size:17px;background:transparent;min-height:22px"><button class="btn plain" data-act="addsvc">Add</button></div>`)}),
+  shows: () => ({title:'Boat shows', body:
+    sec('Upcoming shows', S.shows.map(s=>row({t:esc(s.name),d:`${esc(s.dates)} · Booth ${esc(s.booth)}`,trail:s.booking?'<span class="badge b-green">Bookable</span>':'',on:'show:'+s.id})).join(''), 'Bookable shows let visitors pick a time from your calendar.')
+    + `<button class="btn sec" style="width:100%" data-on="show:new">${svg('plus')}Add a show</button>`}),
+  videos: () => ({title:'Videos', body:
+    sec('Your YouTube videos', S.videos.map((v,i)=>row({t:esc(v.title),d:esc(v.url),ic:'play',trail:`<button class="btn plain red sm" data-delvid="${i}">Remove</button>`})).join('') || row({t:'No videos yet'}), 'Up to 6 videos.')
+    + sec('Add a video', `<div class="field"><label for="f-vid">YouTube link</label><input id="f-vid" placeholder="youtube.com/watch?v=..." inputmode="url"><div class="hint" id="vidHint">Paste a YouTube link.</div></div>`)
+    + `<button class="btn sec" style="width:100%" data-act="addvid">Add video</button>`}),
+  contact: () => ({title:'Contact', body:
+    sec('How people reach you', [row({t:'Phone',trail:`<span class="sub">${PROFILE.phone}</span>`,ic:'phone'}),row({t:'Email',trail:`<span class="sub">${PROFILE.email}</span>`,ic:'mail'})].join(''), 'Phone and email come from your profile.')
+    + sec('', `<div class="field"><label for="f-wa">WhatsApp number</label><input id="f-wa" data-f="contact.whatsapp" inputmode="tel" value="${esc(S.contact.whatsapp)}"><div class="hint">With country code, for example +1 305 555 0100.</div></div><div class="field"><label for="f-hours">Office hours</label><input id="f-hours" data-f="contact.hours" value="${esc(S.contact.hours)}"></div>`)
+    + sec('Social links', ['instagram','linkedin','facebook','youtube'].map(k=>`<div class="field"><label for="f-${k}">${k[0].toUpperCase()+k.slice(1)}</label><input id="f-${k}" data-f="socials.${k}" inputmode="url" placeholder="Paste your ${k} link" value="${esc(S.socials[k])}"></div>`).join(''))
+    + sec('Contact form', [row({t:'Seller details on the form',d:'Year, make, model, engine hours and engines. Optional for the visitor.'}),row({t:'VATO report on seller messages',d:`${5-S.vatoUsed} of 5 free reports left`,trail:'<span class="badge b-green">On</span>'})].join(''), 'When an owner wants to sell, you get a market analysis and a VATO report for their boat with the message.')}),
+};
+
+const showEditor = id => {
+  const s = id==='new' ? {id:Date.now(),name:'',dates:'',city:'',booth:'',booking:true,isNew:true} : S.shows.find(x=>x.id==id);
+  sheet(s.isNew?'Add a show':'Boat show', `${sec('',`
+    <div class="field"><label for="s-name">Show</label><input id="s-name" value="${esc(s.name)}" placeholder="Fort Lauderdale International Boat Show"></div>
+    <div class="field"><label for="s-dates">Dates</label><input id="s-dates" value="${esc(s.dates)}" placeholder="28 October to 1 November 2027"></div>
+    <div class="field"><label for="s-city">City</label><input id="s-city" value="${esc(s.city)}"></div>
+    <div class="field"><label for="s-booth">Booth</label><input id="s-booth" value="${esc(s.booth)}"></div>`)}
+    ${sec('', row({t:'Let visitors book a time',d:'Times come from your calendar.',trail:`<input type="checkbox" class="sw" id="s-book" ${s.booking?'checked':''} aria-label="Let visitors book a time">`}))}
+    ${s.isNew?'':`<button class="btn sec red" style="width:100%" data-delshow="${s.id}">Remove show</button>`}`,
+    {done:()=>{ const v = k => document.getElementById(k).value.trim();
+      if(!v('s-name')){ toast('Add the show name first'); document.getElementById('s-name').focus(); return false; }
+      Object.assign(s,{name:v('s-name'),dates:v('s-dates'),city:v('s-city'),booth:v('s-booth'),booking:document.getElementById('s-book').checked});
+      if(s.isNew){ delete s.isNew; S.shows.push(s); } save(); openEditor('shows'); return false; },
+     back:()=>openEditor('shows')});
+};
+
+/* Look */
+V.look = () => `<div class="split"><div class="col">
+  <div class="head"><div><h1 class="lt">Look</h1><p class="sub m2">Pick a template and a font. Change them any time.</p></div><button class="btn sec sm pvbtn" data-act="preview">Preview</button></div>
+  <section class="sec"><h2>Template</h2><div class="tpls">${Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl" data-tpl="${k}" aria-pressed="${S.template===k}"><div class="shot"><iframe src="${k}.html" loading="lazy" tabindex="-1" title="${t.name}" scrolling="no"></iframe></div><div class="meta"><div><b>${t.name}</b><span>${t.body}</span></div><span class="tick">${svg('check')}</span></div></button>`).join('')}</div></section>
+  <section class="sec"><h2>Font</h2><div class="fonts">${Object.entries(FONTS).map(([k,f])=>`<button class="font" data-font="${k}" aria-pressed="${S.font===k}"><span class="h" style="font-family:'${f.h}'">Boats for sale</span><span class="p" style="font-family:'${f.b}'">Every listing checked and walked in person.</span><span class="n">${f.name}</span><span class="tick">${svg('check')}</span></button>`).join('')}</div><p class="foot">${FONTS[S.font].h} for headings, ${FONTS[S.font].b} for text.</p></section>
+</div>${preview()}</div>`;
+
+/* Live preview: the real template with the broker's font and copy applied */
+let pvMode = 'desk';
+const preview = () => `<aside class="pv" aria-label="Live preview"><div class="bar"><span class="fn hl m2">Live preview</span><div class="seg" role="group" aria-label="Preview size"><button data-pv="desk" aria-pressed="${pvMode==='desk'}">Desktop</button><button data-pv="mob" aria-pressed="${pvMode==='mob'}">Mobile</button></div></div><div class="frame ${pvMode}"><iframe class="live-pv" src="${S.template}.html" title="Live preview"></iframe></div></aside>`;
+function applyPreview(f){
+  let d; try { d = f.contentDocument; } catch { return; }
+  if (!d || !d.body) return;
+  const fp = FONTS[S.font];
+  let st = d.getElementById('cms-font');
+  if (!st) { st = d.createElement('style'); st.id = 'cms-font'; d.head.appendChild(st);
+    const l = d.createElement('link'); l.rel = 'stylesheet'; l.href = document.querySelector('link[href*="DM+Serif"]').href; d.head.appendChild(l); }
+  st.textContent = `*{font-family:'${fp.b}',system-ui,sans-serif!important}h1,h2,h3,h4,[style*="Poppins"],[style*="Poppins"] *{font-family:'${fp.h}',Georgia,serif!important}`;
+  const tpl = TEMPLATES[S.template];
+  const swap = [[tpl.headline, S.headline], [DEFAULTS().intro, S.intro]];
+  const w = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT);
+  for (let n; (n = w.nextNode());) {
+    if (n.__orig === undefined) n.__orig = n.nodeValue.trim();
+    for (const [from, to] of swap) if (from && n.__orig === from) n.nodeValue = to || from;
+  }
+}
+const refreshPreview = () => document.querySelectorAll('iframe.live-pv').forEach(applyPreview);
+
+/* Boats */
+V.boats = () => {
+  const on = S.boats.filter(b=>b.on).length;
+  return `<div class="col">
+  <div class="head"><div><h1 class="lt">Boats</h1><p class="sub m2">${on} of ${S.boats.length} listings show on your page.</p></div><button class="btn pri sm" data-act="addboat">${svg('plus')}Add a boat</button></div>
+  ${sec('On your page', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)} · ${b.len} ft · ${esc(b.loc)}</span><span style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${b.featured?'<span class="badge b-slate">Today\'s pick</span>':''}${b.photos==='imported'?`<span class="badge b-green">${b.count} photos</span>`:b.photos==='queued'?'<span class="badge b-orange">Photos in line</span>':`<button class="badge b-gray" data-photos="${b.id}">${svg('photo','width="12" height="12"')}Add photos</button>`}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''), 'Boat pages on your site link to the YachtWay listing so Google counts both.')}
+  ${sec('Show', [row({t:'Show new listings automatically',d:'New YachtWay listings appear on your page right away.',trail:toggle('autoBoats',S.autoBoats!==false,'Show new listings automatically')})].join(''))}
+</div>`;
+};
+const ADD_WAYS = [
+  ['text','Text it','Text photos and details to our team. We build the listing for you.','msg'],
+  ['pdf','Upload a PDF','Spec sheet or brochure. We read it.','doc'],
+  ['feed','Connect a feed','Already on another site? We pull your boats in.','link'],
+  ['manual','Add by hand','Fill in the listing form step by step.','edit'],
+];
+
+/* Messages */
+let leadFilter = 'all';
+V.messages = () => {
+  const list = S.leads.filter(l => leadFilter==='all' || l.type===leadFilter);
+  return `<div class="col">
+  <div class="head"><div><h1 class="lt">Messages</h1><p class="sub m2">From your page. You also get each one by email.</p></div></div>
+  <div class="seg" role="group" aria-label="Filter messages" style="margin-bottom:16px">${[['all','All'],['buy','Buying'],['sell','Selling'],['other','Other']].map(([k,t])=>`<button data-lf="${k}" aria-pressed="${leadFilter===k}">${t}</button>`).join('')}</div>
+  ${sec('', list.length ? list.map(l=>row({t:`${l.unread?'<b>':''}${esc(l.name)}${l.unread?'</b>':''}`,d:esc(l.about||l.msg),img:`<span class="initial">${l.name.split(' ').map(w=>w[0]).join('')}</span>`,trail:leadBadge(l)+`<span class="fn m3">${l.when}</span>`,on:'lead:'+l.id})).join('') : row({t:'No messages here yet'}))}
+</div>`;
+};
+const leadSheet = id => {
+  const l = S.leads.find(x=>x.id==id); l.unread = false; save(); render();
+  const wa = 'https://wa.me/' + (l.phone||'').replace(/\D/g,'');
+  sheet(l.name, `
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">${leadBadge(l)}<span class="fn m2">${l.when}</span></div>
+    ${sec('', `<p class="quote">${esc(l.msg)}</p>`)}
+    ${l.about ? sec('About a boat', row({t:esc(l.about),ic:'store'})) : ''}
+    ${l.boat ? sec('Their boat', `<dl class="kv"><dt>Year</dt><dd>${l.boat.year}</dd><dt>Make</dt><dd>${esc(l.boat.make)}</dd><dt>Model</dt><dd>${esc(l.boat.model)}</dd><dt>Engine hours</dt><dd>${esc(l.boat.hours)}</dd><dt>Engines</dt><dd>${esc(l.boat.engines)}</dd></dl>`)
+      + sec('VATO report', row({t:'Market analysis and VATO report',d:`Ready. ${5-S.vatoUsed} of 5 free reports left.`,ic:'chart',trail:'<span class="badge b-green">Ready</span>',on:'toast:Opens the VATO report'})) : ''}
+    ${sec('Reply', [l.phone?row({t:'Call',d:esc(l.phone),ic:'phone',href:'tel:'+l.phone.replace(/[^\d+]/g,'')}):'', l.phone?row({t:'WhatsApp',d:esc(l.phone),ic:'wa',href:wa}):'', row({t:'Email',d:esc(l.email),ic:'mail',href:'mailto:'+l.email})].join(''))}
+  `);
+};
+
+/* Analytics */
+let range = 7;
+V.stats = () => {
+  const data = range===7 ? [142,168,155,201,189,226,203] : Array.from({length:30},(_,i)=>Math.round(120+60*Math.sin(i/3)+i*3));
+  const max = Math.max(...data), total = data.reduce((a,b)=>a+b,0);
+  const labels = range===7 ? ['Tue','Wed','Thu','Fri','Sat','Sun','Mon'] : ['10 Oct','','','','','','','','','','','','','','','25 Oct','','','','','','','','','','','','','','Today'];
+  return `<div class="col">
+  <div class="head"><div><h1 class="lt">Analytics</h1><p class="sub m2">Who visits your page and what they do.</p></div><div class="seg" role="group" aria-label="Range">${[[7,'7 days'],[30,'30 days']].map(([k,t])=>`<button data-rg="${k}" aria-pressed="${range===k}">${t}</button>`).join('')}</div></div>
+  <section class="sec"><div class="card"><div class="fn m2">Visitors</div><div class="t1">${total.toLocaleString('en-US')}</div><div class="bars" role="img" aria-label="Visitors per day">${data.map(v=>`<i style="height:${v/max*100}%" title="${v}"></i>`).join('')}</div><div class="axis"><span>${labels[0]}</span><span>${labels[labels.length-1]}</span></div></div></section>
+  <section class="sec"><div class="cards">${[['Messages',range===7?'23':'94'],['Calls',range===7?'17':'61'],['WhatsApp',range===7?'24':'88'],['Show bookings',range===7?'5':'12']].map(([k,n])=>`<div class="card stat"><div class="fn m2">${k}</div><div class="n">${n}</div></div>`).join('')}</div></section>
+  ${sec('Most viewed boats', S.boats.slice(0,4).map((b,i)=>row({t:esc(b.name),img:`<img class="thumb" src="${IMG+b.img}" alt="">`,trail:`<span class="sub">${[1204,866,640,512][i]*(range===7?1:4)} views</span>`})).join(''))}
+  ${sec('Where visitors come from', [['Google',46],['YachtWay',31],['Instagram',14],['Direct link',9]].map(([k,p])=>`<div class="row"><span class="main"><span class="t" style="display:block">${k}</span><span class="progress" style="display:block;margin:6px 0 0"><i style="width:${p}%;background:var(--label)"></i></span></span><span class="trail sub">${p}%</span></div>`).join(''))}
+</div>`;
+};
+
+/* Settings */
+const RESERVED = ['boats','brokers','admin','yachts','search','login'];
+V.settings = () => `<div class="col">
+  <div class="head"><div><h1 class="lt">Address and domain</h1><p class="sub m2">Where people find your page.</p></div></div>
+  ${sec('Page address', `<div class="field"><label for="f-slug">yachtway.com/</label><input id="f-slug" value="${esc(S.slug)}" autocapitalize="off" spellcheck="false"><div class="hint ok" id="slugHint">This address is yours.</div></div>`, 'Old links keep working when you change it.')}
+  ${sec('Your own domain', S.domain
+    ? row({t:esc(S.domain),d:S.domainStatus==='active'?'Active':'Requested. We set it up and email you.',ic:'globe',trail:`<button class="btn plain red sm" data-act="rmdomain">Remove</button>`})
+    : `<div class="field"><label for="f-domain">Domain</label><input id="f-domain" placeholder="yourname.com" autocapitalize="off" spellcheck="false" inputmode="url"><div class="hint">Point your own address to this page for $49 a year.</div></div>`,
+    S.domain ? '' : 'We buy and connect the domain for you. Your YachtWay address keeps working.')}
+  ${S.domain ? '' : '<button class="btn sec" style="width:100%;margin:-16px 0 32px" data-act="domain">Request domain</button>'}
+  ${sec('Status', S.published
+    ? row({t:'Your page is live',d:esc(pageUrl()),ic:'check',trail:`<button class="btn plain red sm" data-act="unpublish">Take page offline</button>`})
+    : row({t:'Not live yet',d:'Finish setup to publish.',ic:'lock',href:'#setup'}))}
+  ${sec('Help', row({t:'Want help setting it up?',d:'Call (800) 567-9929 and we set it up with you.',ic:'phone',href:'tel:+18005679929'}))}
+</div>`;
+
+/* ---------- Setup wizard: 4 short steps, prefilled from the profile ---------- */
+let step = 0;
+const STEPS = ['Check your details','Pick a look','Pick your boats','Write your bio and publish'];
+function setupView(){
+  const body = [
+    () => `<div class="kicker">Step 1 of 4</div><h1 class="t1" style="margin-bottom:6px">Check your details</h1><p class="sub m2" style="margin-bottom:24px">We filled these in from your YachtWay profile.</p>
+      ${sec('', [row({t:PROFILE.name,d:'Yacht broker',img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,trail:`<span class="badge b-green">${svg('check','width="12" height="12"')}From profile</span>`}),row({t:PROFILE.company,d:`License ${PROFILE.license}`,ic:'store'}),row({t:'Office',d:PROFILE.address,ic:'home'}),row({t:'Phone and email',d:`${PROFILE.phone} · ${PROFILE.email}`,ic:'phone'})].join(''),'Something wrong? Change it in profile settings and it updates here too.')}
+      ${sec('Your headline', `<div class="field"><label for="w-headline">Headline</label><input id="w-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}"></div><div class="field"><label for="w-areas">Areas you cover</label><input id="w-areas" data-f="areas" value="${esc(S.areas)}"></div>`)}`,
+    () => `<div class="kicker">Step 2 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick a look</h1><p class="sub m2" style="margin-bottom:24px">Every template shows the same things. You can change it any time.</p>
+      <section class="sec"><div class="tpls">${Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl" data-tpl="${k}" aria-pressed="${S.template===k}"><div class="shot"><iframe src="${k}.html" loading="lazy" tabindex="-1" title="${t.name}" scrolling="no"></iframe></div><div class="meta"><div><b>${t.name}</b><span>${t.body}</span></div><span class="tick">${svg('check')}</span></div></button>`).join('')}</div></section>
+      <section class="sec"><h2>Font</h2><div class="fonts">${Object.entries(FONTS).map(([k,f])=>`<button class="font" data-font="${k}" aria-pressed="${S.font===k}"><span class="h" style="font-family:'${f.h}'">Boats for sale</span><span class="p" style="font-family:'${f.b}'">Walked in person.</span><span class="n">${f.name}</span><span class="tick">${svg('check')}</span></button>`).join('')}</div></section>
+      <button class="btn sec" style="width:100%" data-act="preview">Preview my page</button>`,
+    () => `<div class="kicker">Step 3 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick your boats</h1><p class="sub m2" style="margin-bottom:24px">Your YachtWay listings are already here. Turn off any you do not want to show.</p>
+      ${sec('Your listings', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''))}
+      ${sec('No listings yet? Add one', ADD_WAYS.map(([k,t,d,ic])=>row({t,d,ic,on:'add:'+k})).join(''))}`,
+    () => { const w = words(S.bio), list = checklist();
+      return `<div class="kicker">Step 4 of 4</div><h1 class="t1" style="margin-bottom:6px">Write your bio and publish</h1><p class="sub m2" style="margin-bottom:24px">Google sees your page once every item is done.</p>
+      ${sec('About you', `<div class="field"><label for="w-bio">Bio</label><textarea id="w-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`)}
+      <button class="btn sec" style="width:100%;margin:-16px 0 32px" data-act="bio">Write a first draft for me</button>
+      ${sec('Your page address', row({t:'yachtway.com/'+esc(S.slug),ic:'globe',href:'#settings'}))}
+      ${sec('Checklist', list.map(c=>row({t:c.k,trail:c.ok?`<span class="badge b-green">Done</span>`:`<span class="badge b-orange">To do</span>`})).join(''))}`; },
+  ][step]();
+  const ready = checklist().every(c=>c.ok);
+  return `<div class="wiz" role="dialog" aria-modal="true" aria-label="Set up your page">
+    <header><a class="btn plain" href="#home">Close</a><div class="steps" aria-label="Step ${step+1} of 4">${STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div><span style="width:64px"></span></header>
+    <div class="body"><div class="col">${body}</div></div>
+    <footer>${step?`<button class="btn sec" data-wiz="-1">Back</button>`:'<span></span>'}${step<3?`<button class="btn pri" data-wiz="1">Continue</button>`:`<button class="btn pri" data-act="publish" ${ready?'':'disabled'}>Publish page</button>`}</footer>
+  </div>`;
+}
+
+/* ---------- Sheets and toasts ---------- */
+let sheetOpts = {};
+function sheet(title, html, opts={}){
+  sheetOpts = opts;
+  const layer = document.getElementById('layer');
+  layer.innerHTML = `<div class="scrim" data-act="close"><div class="sheet ${opts.full?'full':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><header>${opts.back?'<button class="btn plain" data-act="back">Back</button>':'<span></span>'}<b>${esc(title)}</b><button class="btn plain r" data-act="done">Done</button></header><div class="body">${html}</div></div></div>`;
+  layer.querySelector('.sheet').addEventListener('click', e => e.stopPropagation(), true);
+  const first = layer.querySelector('.body input:not([disabled]),.body textarea,.body button');
+  (first||layer.querySelector('[data-act=done]')).focus({preventScroll:true});
+  layer.querySelectorAll('iframe.live-pv').forEach(f => f.addEventListener('load', () => applyPreview(f)));
+}
+const closeSheet = () => { document.getElementById('layer').innerHTML = ''; sheetOpts = {}; };
+function openEditor(k){ const e = EDITORS[k](); sheet(e.title, e.body, {onClose:()=>{ if (route()[1]) location.hash = '#'+route()[0]; }}); }
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.role = 'status'; d.textContent = t; document.body.appendChild(d); setTimeout(()=>d.remove(), 2200); }
+
+/* ---------- Render ---------- */
+function render(){
+  const [r, sub] = route();
+  chrome();
+  const main = document.getElementById('view');
+  if (r === 'setup') { main.innerHTML = V.home(); document.getElementById('layer').innerHTML = setupView(); bindIframes(); return; }
+  if (document.querySelector('.wiz')) closeSheet();
+  main.innerHTML = (V[r] || V.home)();
+  bindIframes();
+  if (r === 'edit' && sub && EDITORS[sub]) openEditor(sub);
+}
+function bindIframes(){ document.querySelectorAll('iframe.live-pv').forEach(f => f.addEventListener('load', () => applyPreview(f))); }
+addEventListener('hashchange', () => { closeSheet(); render(); scrollTo(0,0); });
+
+/* ---------- Events ---------- */
+const setPath = (path, val) => { const ks = path.split('.'); let o = S; while (ks.length > 1) o = o[ks.shift()]; o[ks[0]] = val; };
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.f) { setPath(t.dataset.f, t.value); save(); refreshPreview();
+    if (t.dataset.f === 'bio') { const w = words(t.value), h = document.getElementById('bioHint'); h.className = 'hint' + (w>=40?' ok':''); h.textContent = w>=40 ? `${w} words` : `${w} words. Add ${40-w} more words.`; }
+    if (t.dataset.f === 'headline' && t.nextElementSibling) t.nextElementSibling.textContent = `${t.value.length} of 60 characters`;
+  }
+  if (t.id === 'f-slug') { const v = t.value.toLowerCase(), h = document.getElementById('slugHint');
+    const ok = /^[a-z0-9-]{3,60}$/.test(v), res = RESERVED.includes(v);
+    h.className = 'hint ' + (ok && !res ? 'ok' : 'bad');
+    h.textContent = !ok ? 'Use 3 to 60 letters, numbers or dashes.' : res ? 'This address is reserved. Try another.' : 'This address is free.';
+    if (ok && !res) { S.slug = v; save(); } }
+  if (t.id === 'f-vid') { const h = document.getElementById('vidHint'), ok = /(youtube\.com\/(watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)[\w-]{11}/.test(t.value);
+    h.className = 'hint ' + (t.value ? (ok?'ok':'bad') : ''); h.textContent = !t.value ? 'Paste a YouTube link.' : ok ? 'Link checked' : 'This does not look like a YouTube link yet.'; }
+});
+document.addEventListener('change', e => {
+  const k = e.target.dataset.tg; if (!k) return;
+  const v = e.target.checked, [a, b] = k.split('.');
+  if (a === 'boat') { S.boats.find(x=>x.id==b).on = v; }
+  else if (a === 'review') { S.reviews.find(x=>x.id==b).on = v; }
+  else if (a === 'autoBoats') { S.autoBoats = v; }
+  else setPath(k, v);
+  save();
+  if (a === 'boat' && !document.querySelector('.wiz')) render();
+  if (a === 'boat' && document.querySelector('.wiz')) document.getElementById('layer').innerHTML = setupView();
+});
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act],[data-on],[data-tpl],[data-font],[data-pv],[data-lf],[data-rg],[data-svc],[data-cust],[data-feat],[data-wiz],[data-photos],[data-delvid],[data-delshow]');
+  if (!el) return;
+  const d = el.dataset, inWiz = !!document.querySelector('.wiz');
+  if (d.tpl) { S.template = d.tpl; if (TEMPLATES[d.tpl].headline && Object.values(TEMPLATES).some(t=>t.headline===S.headline)) S.headline = TEMPLATES[d.tpl].headline; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
+  if (d.font) { S.font = d.font; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
+  if (d.pv) { pvMode = d.pv; render(); return; }
+  if (d.lf) { leadFilter = d.lf; render(); return; }
+  if (d.rg) { range = +d.rg; render(); return; }
+  if (d.wiz) { step = Math.max(0, Math.min(3, step + +d.wiz)); S.setupDone = true; save(); document.getElementById('layer').innerHTML = setupView(); document.querySelector('.wiz .body').scrollTo(0,0); return; }
+  if (d.svc) { const i = S.services.indexOf(d.svc); i < 0 ? S.services.push(d.svc) : S.services.splice(i,1); save(); openEditor('services'); return; }
+  if (d.cust) { S.custom.splice(+d.cust,1); save(); openEditor('services'); return; }
+  if (d.feat) { S.boats.forEach(b=>b.featured = b.id==d.feat); save(); openEditor('featured'); render(); return; }
+  if (d.delvid) { S.videos.splice(+d.delvid,1); save(); openEditor('videos'); return; }
+  if (d.delshow) { S.shows = S.shows.filter(s=>s.id!=d.delshow); save(); openEditor('shows'); return; }
+  if (d.photos) { const b = S.boats.find(x=>x.id==d.photos);
+    sheet('Photos for this boat', `${sec(esc(b.name), `<div class="field"><label for="f-ph">Drive or Dropbox folder link</label><input id="f-ph" inputmode="url" placeholder="https://drive.google.com/..."><div class="hint">One link, one boat. The folder should hold only this boat.</div></div>`)}`,
+      {done:()=>{ const v = document.getElementById('f-ph').value.trim(); if (!v) return true;
+        if (!/^https?:\/\/([\w-]+\.)?(drive\.google\.com|dropbox\.com)\//i.test(v)) { toast('Paste a Google Drive or Dropbox link'); return false; }
+        b.photos = 'queued'; save(); render(); toast('Photos in line'); return true; }}); return; }
+  if (d.on) { const [kind, id] = d.on.split(':');
+    if (kind === 'lead') return leadSheet(id);
+    if (kind === 'show') return showEditor(id);
+    if (kind === 'toast') return toast(d.on.slice(6));
+    if (kind === 'photoshoot') return sheet('Book a photoshoot', sec('Pick a listing', S.boats.filter(b=>b.on).map(b=>row({t:esc(b.name),img:`<img class="thumb" src="${IMG+b.img}" alt="">`,on:'toast:Photoshoot request sent'})).join(''), 'Photos, video and a 3D Tour. We confirm the date by email.'));
+    if (kind === 'add') return toast(ADD_WAYS.find(w=>w[0]===id)[1] + ' opens the listing tool');
+  }
+  switch (d.act) {
+    case 'close': if (e.target === el) { const cb = sheetOpts.onClose; closeSheet(); cb && cb(); } return;
+    case 'done': { const ok = sheetOpts.done ? sheetOpts.done() : true; if (ok !== false) { const cb = sheetOpts.onClose; closeSheet(); render(); cb && cb(); } return; }
+    case 'back': sheetOpts.back && sheetOpts.back(); return;
+    case 'copy': navigator.clipboard?.writeText('https://' + pageUrl()).catch(()=>{}); toast('Link copied'); return;
+    case 'publish': S.published = true; save(); step = 0; location.hash = '#home'; toast('Your page is live'); return;
+    case 'unpublish': S.published = false; save(); render(); toast('Your page is offline'); return;
+    case 'domain': { const v = document.getElementById('f-domain').value.trim().toLowerCase();
+      if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(v)) { toast('Enter a domain like yourname.com'); return; }
+      S.domain = v; S.domainStatus = 'requested'; save(); render(); toast('Domain requested'); return; }
+    case 'rmdomain': S.domain = null; S.domainStatus = null; save(); render(); return;
+    case 'addsvc': { const i = document.getElementById('f-cust'), v = i.value.trim(); if (v) { S.custom.push(v); save(); openEditor('services'); } return; }
+    case 'addvid': { const i = document.getElementById('f-vid'), m = i.value.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
+      if (!m) { toast('Paste a YouTube link'); return; } if (S.videos.length >= 6) { toast('Up to 6 videos'); return; }
+      S.videos.push({url:'https://youtu.be/'+m[1],title:'New video'}); save(); openEditor('videos'); return; }
+    case 'bio': S.bio = `I have sold boats in South Florida since 2018, with 120 sales from 40 to 90 feet. I know Azimut, Sunseeker and Princess inside out, and I walk every boat I list in person. Owners pick me because I price from real sold data, run every showing myself and handle the survey, paperwork and closing so the sale stays calm.`;
+      save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('about'); toast('Draft added. Make it yours.'); return;
+    case 'addboat': sheet('Add a boat', sec('Pick the easiest way', ADD_WAYS.map(([k,t,d,ic])=>row({t,d,ic,on:'add:'+k})).join(''), 'You can add more later.')); return;
+    case 'preview': {
+      sheet('Preview', `<div style="display:flex;justify-content:center;margin-bottom:16px"><div class="seg" role="group" aria-label="Preview size"><button data-pvs="mob" aria-pressed="true">Mobile</button><button data-pvs="desk" aria-pressed="false">Desktop</button></div></div><div id="pvs" style="height:calc(100% - 52px);display:flex;justify-content:center"><iframe class="live-pv" src="${S.template}.html" title="Preview" style="width:390px;max-width:100%;height:100%;border:0;border-radius:16px;background:#fff"></iframe></div>`, {full:true});
+      document.querySelector('.sheet .body').style.cssText = 'padding:16px;overflow:hidden;display:flex;flex-direction:column';
+      document.querySelectorAll('[data-pvs]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-pvs]').forEach(x=>x.setAttribute('aria-pressed', x===b)); document.querySelector('#pvs iframe').style.width = b.dataset.pvs==='mob' ? '390px' : '100%'; });
+      return; }
+  }
+  if (d.act && d.act.startsWith('toast:')) toast(d.act.slice(6));
+});
+addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.scrim')) { const cb = sheetOpts.onClose; closeSheet(); cb && cb(); } });
+render();
+</script>
+</body>
+</html>
