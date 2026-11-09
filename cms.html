@@ -302,6 +302,7 @@ const DEFAULTS = () => ({
   headline:TEMPLATES.a.headline,
   intro:'120 boats sold since 2018. Every listing checked and walked in person.',
   bio:'',
+  profileLinks:{WhatsApp:PROFILE.whatsapp,...PROFILE.socials},
   languages:'English, French, Dutch',
   areas:'Miami, Fort Lauderdale, Palm Beach',
   stats:{sold:true,years:true,listed:true,rating:true},
@@ -468,10 +469,9 @@ const EDITORS = {
     + sec('Add a video', `<div class="field"><label for="f-vid">YouTube link</label><input id="f-vid" placeholder="youtube.com/watch?v=..." inputmode="url"><div class="hint" id="vidHint">Paste a YouTube link.</div></div>`)
     + `<button class="btn sec" style="width:100%" data-act="addvid">Add video</button>`}),
   contact: () => ({title:'Contact', body:
-    sec('How people reach you', [row({t:'Phone',trail:`<span class="sub">${PROFILE.phone}</span>`,ic:'phone'}),row({t:'Email',trail:`<span class="sub">${PROFILE.email}</span>`,ic:'mail'}),row({t:'WhatsApp',trail:`<span class="sub">${PROFILE.whatsapp}</span>`,ic:'wa'})].join(''), 'Phone, email and WhatsApp come from your YachtWay profile.')
+    sec('How people reach you', [row({t:'Phone',trail:`<span class="sub">${PROFILE.phone}</span>`,ic:'phone'}),row({t:'Email',trail:`<span class="sub">${PROFILE.email}</span>`,ic:'mail'})].join(''), 'Phone and email come from your YachtWay profile.')
     + sec('', `<div class="field"><label for="f-hours">Office hours</label><input id="f-hours" data-f="contact.hours" value="${esc(S.contact.hours)}"></div>`)
-    + sec('Social links', Object.entries(PROFILE.socials).map(([k,v])=>row({t:k,trail:`<span class="sub">${v?esc(v):'Not added'}</span>`})).join(''), 'Social links come from your YachtWay profile.')
-    + `<a class="btn sec" style="width:100%;margin-bottom:24px" href="#" data-act="toast:Opens profile settings">Edit in profile settings</a>`
+    + sec('WhatsApp and social links', Object.keys(S.profileLinks).map(k=>`<div class="field"><label for="f-pl-${k}">${k}</label><input id="f-pl-${k}" data-f="profileLinks.${k}" inputmode="${k==='WhatsApp'?'tel':'url'}" placeholder="${k==='WhatsApp'?'With country code, for example +1 305 555 0100':'Paste your '+k+' link'}" value="${esc(S.profileLinks[k]||'')}"></div>`).join(''), 'These save to your YachtWay profile, so your profile and your page always match.')
     + sec('Contact form', [row({t:'Seller details on the form',d:'Year, make, model, engine hours and engines. Optional for the visitor.'}),row({t:'VATO report on seller messages',d:`${5-S.vatoUsed} of 5 free reports left`,trail:'<span class="badge b-green">On</span>'})].join(''), 'When an owner wants to sell, you get a market analysis and a VATO report for their boat with the message.')}),
 };
 
