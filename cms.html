@@ -519,17 +519,11 @@ const refreshPreview = () => document.querySelectorAll('iframe.live-pv').forEach
 V.boats = () => {
   const on = S.boats.filter(b=>b.on).length;
   return `<div class="col">
-  <div class="head"><div><h1 class="lt">Boats</h1><p class="sub m2">${on} of ${S.boats.length} listings show on your page.</p></div><button class="btn pri sm" data-act="addboat">${svg('plus')}Add a boat</button></div>
+  <div class="head"><div><h1 class="lt">Boats</h1><p class="sub m2">Your YachtWay listings. ${on} of ${S.boats.length} show on your page.</p></div><a class="btn sec sm" href="#" data-act="toast:Opens My listings on YachtWay">Manage listings</a></div>
   ${sec('On your page', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)} · ${b.len} ft · ${esc(b.loc)}</span><span style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${b.featured?'<span class="badge b-slate">Today\'s pick</span>':''}${b.photos==='imported'?`<span class="badge b-green">${b.count} photos</span>`:b.photos==='queued'?'<span class="badge b-orange">Photos in line</span>':`<button class="badge b-gray" data-photos="${b.id}">${svg('photo','width="12" height="12"')}Add photos</button>`}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''), 'Boat pages on your site link to the YachtWay listing so Google counts both.')}
   ${sec('Show', [row({t:'Show new listings automatically',d:'New YachtWay listings appear on your page right away.',trail:toggle('autoBoats',S.autoBoats!==false,'Show new listings automatically')})].join(''))}
 </div>`;
 };
-const ADD_WAYS = [
-  ['text','Text it','Text photos and details to our team. We build the listing for you.','msg'],
-  ['pdf','Upload a PDF','Spec sheet or brochure. We read it.','doc'],
-  ['feed','Connect a feed','Already on another site? We pull your boats in.','link'],
-  ['manual','Add by hand','Fill in the listing form step by step.','edit'],
-];
 
 /* Messages */
 let leadFilter = 'all';
@@ -599,7 +593,7 @@ function setupView(){
       <button class="btn sec" style="width:100%" data-act="preview">Preview my page</button>`,
     () => `<div class="kicker">Step 3 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick your boats</h1><p class="sub m2" style="margin-bottom:24px">Your YachtWay listings are already here. Turn off any you do not want to show.</p>
       ${sec('Your listings', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''))}
-      ${sec('No listings yet? Add one', ADD_WAYS.map(([k,t,d,ic])=>row({t,d,ic,on:'add:'+k})).join(''))}`,
+      <p class="fn m2" style="padding:0 16px">New listings you create on YachtWay show here on their own.</p>`,
     () => { const w = words(S.bio), list = checklist();
       return `<div class="kicker">Step 4 of 4</div><h1 class="t1" style="margin-bottom:6px">Write your bio and publish</h1><p class="sub m2" style="margin-bottom:24px">Google sees your page once every item is done.</p>
       ${sec('About you', `<div class="field"><label for="w-bio">Bio</label><textarea id="w-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`)}
@@ -696,7 +690,6 @@ document.addEventListener('click', e => {
     if (kind === 'show') return showEditor(id);
     if (kind === 'toast') return toast(d.on.slice(6));
     if (kind === 'photoshoot') return sheet('Book a photoshoot', sec('Pick a listing', S.boats.filter(b=>b.on).map(b=>row({t:esc(b.name),img:`<img class="thumb" src="${IMG+b.img}" alt="">`,on:'toast:Photoshoot request sent'})).join(''), 'Photos, video and a 3D Tour. We confirm the date by email.'));
-    if (kind === 'add') return toast(ADD_WAYS.find(w=>w[0]===id)[1] + ' opens the listing tool');
   }
   switch (d.act) {
     case 'close': if (e.target === el) { const cb = sheetOpts.onClose; closeSheet(); cb && cb(); } return;
@@ -715,7 +708,6 @@ document.addEventListener('click', e => {
       S.videos.push({url:'https://youtu.be/'+m[1],title:'New video'}); save(); openEditor('videos'); return; }
     case 'bio': S.bio = `I have sold boats in South Florida since 2018, with 120 sales from 40 to 90 feet. I know Azimut, Sunseeker and Princess inside out, and I walk every boat I list in person. Owners pick me because I price from real sold data, run every showing myself and handle the survey, paperwork and closing so the sale stays calm.`;
       save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('about'); toast('Draft added. Make it yours.'); return;
-    case 'addboat': sheet('Add a boat', sec('Pick the easiest way', ADD_WAYS.map(([k,t,d,ic])=>row({t,d,ic,on:'add:'+k})).join(''), 'You can add more later.')); return;
     case 'preview': {
       sheet('Preview', `<div style="display:flex;justify-content:center;margin-bottom:16px"><div class="seg" role="group" aria-label="Preview size"><button data-pvs="mob" aria-pressed="true">Mobile</button><button data-pvs="desk" aria-pressed="false">Desktop</button></div></div><div id="pvs" style="height:calc(100% - 52px);display:flex;justify-content:center"><iframe class="live-pv" src="${S.template}.html" title="Preview" style="width:390px;max-width:100%;height:100%;border:0;border-radius:16px;background:#fff"></iframe></div>`, {full:true});
       document.querySelector('.sheet .body').style.cssText = 'padding:16px;overflow:hidden;display:flex;flex-direction:column';
