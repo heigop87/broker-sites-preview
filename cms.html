@@ -288,6 +288,10 @@ const FONTS = {
   bold:{name:'Bold',h:'Archivo',b:'Figtree'},
 };
 const SERVICES = {selling:'Selling your boat',buying:'Finding your next boat',new_builds:'New builds',trade_ins:'Trade-ins',after_sales:'After-sales care',charter:'Charter',charter_management:'Charter management',yacht_management:'Yacht management',financing_help:'Help with financing',surveys_sea_trials:'Surveys and sea trials',crew_placement:'Crew placement',delivery:'Delivery'};
+/* Same list as BOAT_SHOWS in the FE build (src/core/data/boat-shows) */
+const BOAT_SHOWS = [["Annapolis Boat Shows (Power & Sail)","Annapolis, Maryland, USA"],["Boot Düsseldorf","Düsseldorf, Germany"],["Cannes Yachting Festival","Cannes, France"],["Chicago Boat Show","Chicago, Illinois, USA"],["Dubai International Boat Show","Dubai, UAE"],["Fort Lauderdale International Boat Show (FLIBS)","Fort Lauderdale, Florida, USA"],["Genoa Boat Show (Salone Nautico)","Genoa, Italy"],["HISWA te Water","Lelystad, Netherlands"],["Miami International Boat Show","Miami, Florida, USA"],["Monaco Yacht Show","Monaco"],["MYBA Charter Show","Sanremo, Italy"],["Newport International Boat Show","Newport, Rhode Island, USA"],["Newport Beach International Boat Show","Newport Beach, California, USA"],["New York Boat Show (Progressive Insurance)","New York, USA"],["Olympic Yacht Show","Lavrio, Greece"],["Palma International Boat Show","Palma de Mallorca, Spain"],["Palm Beach International Boat Show","Palm Beach, Florida, USA"],["Sanctuary Cove International Boat Show","Gold Coast, Australia"],["Shanghai International Boat Show","Shanghai, China"],["Singapore Yachting Festival","Singapore"],["Southampton International Boat Show","Southampton, UK"],["Tampa Bay Boat Show","Tampa, Florida, USA"],["Valencia Boat Show","Valencia, Spain"]];
+/* Same themes as the FE build (broker-site.ts): ink, paper, accent */
+const THEMES = {onyx:['Onyx','#111113','#f6f5f2','#8c7650'],riviera:['Riviera','#0e2a3b','#f3f5f6','#2f6f8f'],sage:['Sage','#26332b','#f2f2ec','#6f8466'],sand:['Sand','#3b3129','#f5f0e8','#9a7b56'],slate:['Slate','#1e2630','#f7f8f9','#5a6b7d']};
 const PROFILE = {
   name:'Adrian Cole',first:'Adrian',photo:IMG+'e03f1e2e46ddd9795477f0acc4f5c009.webp',
   company:'APEX Yacht Group',license:'ABC-1235',
@@ -295,16 +299,17 @@ const PROFILE = {
   socials:{Instagram:'instagram.com/adriancole.yachts',LinkedIn:'linkedin.com/in/adriancole',Facebook:'',YouTube:'youtube.com/@adriancoleyachts',TikTok:''},
   address:'1450 Brickell Bay Drive, Suite 210, Miami, FL 33131',
   phone:'+1 (305) 555-0142',email:'adrian@apexyachtgroup.com',
+  city:'Miami',state:'FL',onYachtWaySince:2018,
 };
 const DEFAULTS = () => ({
-  published:false, setupDone:false, slug:'adrian-cole', domain:null, domainStatus:null,
+  published:false, setupDone:false, slug:'adrian-cole', theme:'onyx', domain:null, domainStatus:null,
   template:'a', font:'modern',
   headline:TEMPLATES.a.headline,
   intro:'120 boats sold since 2018. Every listing checked and walked in person.',
   bio:'',
   profileLinks:{WhatsApp:PROFILE.whatsapp,...PROFILE.socials},
   languages:'English, French, Dutch',
-  areas:'Miami, Fort Lauderdale, Palm Beach',
+  areas:PROFILE.city+', Fort Lauderdale, Palm Beach',
   stats:{sold:true,years:true,listed:true,rating:true},
   sections:{featured:true,reviews:true,services:true,shows:true,videos:false},
   services:['selling','buying','new_builds','trade_ins','after_sales'], custom:[],
@@ -323,49 +328,45 @@ const DEFAULTS = () => ({
     {id:3,name:'Laura Chen',boat:'Bought a Princess S62',text:'Calm, clear and always on the dock before us.',on:false},
   ],
   shows:[
-    {id:1,name:'boot Düsseldorf',dates:'23 to 31 January 2027',city:'Düsseldorf, Germany',booth:'412',booking:true},
-    {id:2,name:'Miami International Boat Show',dates:'10 to 14 February 2027',city:'Miami Beach, FL',booth:'C-218',booking:true},
-    {id:3,name:'Palm Beach International Boat Show',dates:'17 to 21 March 2027',city:'West Palm Beach, FL',booth:'PB-307',booking:false},
+    {id:1,name:'Boot Düsseldorf',dates:'23 to 31 January 2027',city:'Düsseldorf, Germany',booth:'412',booking:true},
+    {id:2,name:'Miami International Boat Show',dates:'10 to 14 February 2027',city:'Miami, Florida, USA',booth:'C-218',booking:true},
+    {id:3,name:'Palm Beach International Boat Show',dates:'17 to 21 March 2027',city:'Palm Beach, Florida, USA',booth:'PB-307',booking:false},
   ],
   contact:{hours:'Monday to Friday, 9:00 AM to 5:00 PM'},
   videos:[{url:'https://youtu.be/dQw4w9WgXcQ',title:'Walkthrough: 2022 Princess F70'}],
-  leads:[
-    {id:1,name:'James Porter',type:'sell',when:'12 min ago',unread:true,msg:'Looking to sell my boat this spring. Can you give me an idea of price?',boat:{year:2018,make:'Sea Ray',model:'L650 Fly',hours:'740',engines:'Twin Cummins QSM11'},email:'james.porter@example.com',phone:'+1 954 555 0190'},
-    {id:2,name:'Elena Rossi',type:'buy',when:'2 h ago',unread:true,msg:'Is the Princess F70 still available? We would like to see her this weekend.',about:'2022 Princess F70',email:'elena.rossi@example.com',phone:'+1 786 555 0133'},
-    {id:3,name:'Tom Becker',type:'buy',when:'Yesterday',unread:false,msg:'Searching for a 60 to 70 ft flybridge under $2.5M for the Bahamas.',email:'tom.becker@example.com',phone:'+1 561 555 0122'},
-    {id:4,name:'Priya Nair',type:'other',when:'Mon',unread:false,msg:'Do you handle charter management for a 54 ft Viking?',email:'priya.nair@example.com',phone:''},
-  ],
   vatoUsed:1,
 });
 let S;
 try { S = Object.assign(DEFAULTS(), JSON.parse(localStorage.getItem('bs-cms') || '{}')); } catch { S = DEFAULTS(); }
 const save = () => { try { localStorage.setItem('bs-cms', JSON.stringify(S)); } catch {} };
 const money = n => '$' + n.toLocaleString('en-US');
-const pageUrl = () => S.domain && S.domainStatus === 'active' ? S.domain : 'yachtway.com/' + S.slug;
+const pageUrl = () => S.domain && S.domainStatus === 'active' ? S.domain : 'yachtway.com/brokers/' + S.slug;
 
 /* ---------- Publish checklist (same gate as the FE build) ---------- */
 const checklist = () => [
-  {k:'Name and address',ok:!!PROFILE.address,go:'#edit/profile'},
-  {k:'Company and logo',ok:true,go:'#edit/profile'},
-  {k:'Your photo',ok:!!PROFILE.photo,go:'#edit/profile'},
-  {k:'At least one boat on your page',ok:S.boats.some(b=>b.on),go:'#boats'},
+  {k:'Name and office address',ok:!!PROFILE.name&&!!PROFILE.address,go:'#edit/profile',req:true},
+  {k:'Your photo',ok:!!PROFILE.photo,go:'#edit/profile',req:true},
+  {k:'At least one boat on your page',ok:S.boats.some(b=>b.on),go:'#boats',req:true},
   {k:'Services',ok:S.services.length+S.custom.length>0,go:'#edit/services'},
   {k:'Bio of 40 words or more',ok:words(S.bio)>=40,go:'#edit/about'},
 ];
+const canPublish = () => checklist().every(c=>c.ok||!c.req);
+const checkRow = c => row({t:c.k,d:c.req?'Needed to publish':'Recommended',trail:c.ok?`<span class="badge b-green">Done</span>`:`<span class="badge ${c.req?'b-orange':'b-gray'}">To do</span>`,href:c.go});
 
 /* ---------- Navigation ---------- */
 const NAV = [
   ['home','Home','home'],['edit','Edit page','edit'],['look','Look','look'],['boats','Boats','store'],
-  ['messages','Messages','msg'],['stats','Analytics','chart'],['settings','Address and domain','set'],
+  ['stats','Analytics','chart'],['settings','Address and domain','set'],['more','More','grid'],
 ];
-const TABS = ['home','edit','look','boats','messages'];
+const TABS = ['home','edit','look','boats','more'];
 const route = () => (location.hash.slice(1) || 'home').split('/');
 function chrome(){
-  const [r] = route(), unread = S.leads.filter(l=>l.unread).length;
-  document.getElementById('railNav').innerHTML = NAV.map(([k,t,i]) =>
-    `<a class="nav" href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${t}${k==='messages'&&unread?`<span class="count">${unread}</span>`:''}</a>`).join('');
+  const [r] = route();
+  document.getElementById('railNav').innerHTML = NAV.filter(n=>n[0]!=='more').map(([k,t,i]) =>
+    `<a class="nav" href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${t}</a>`).join('')
+    + `<a class="nav" href="#" data-act="toast:Opens your YachtWay chat">${svg('msg')}Messages</a>`;
   document.getElementById('tabbar').innerHTML = TABS.map(k => { const [,t,i] = NAV.find(n=>n[0]===k);
-    return `<a href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${k==='edit'?'Edit':t}${k==='messages'&&unread?`<span class="dot">${unread}</span>`:''}</a>`; }).join('');
+    return `<a href="#${k}" ${r===k?'aria-current="page"':''}>${svg(i)}${k==='edit'?'Edit':t}</a>`; }).join('');
   const live = document.getElementById('railLive'), top = document.getElementById('topLive');
   live.innerHTML = `${svg('ext')}View my page`; live.href = top.href = S.template + '.html';
   document.getElementById('topTitle').textContent = (NAV.find(n=>n[0]===r)||NAV[0])[1];
@@ -384,7 +385,7 @@ const sec = (h, inner, foot) => `<section class="sec">${h?`<h2>${h}</h2>`:''}<di
 const V = {};
 
 V.home = () => {
-  const list = checklist(), done = list.filter(c=>c.ok).length, unread = S.leads.filter(l=>l.unread);
+  const list = checklist(), done = list.filter(c=>c.ok).length;
   const top = S.published
     ? `<div class="card live" style="margin-bottom:32px"><div class="url"><span class="badge b-green" style="margin-bottom:8px">${svg('check','width="12" height="12"')}Live</span><div class="fn m2">Your page is live at</div><b>${esc(pageUrl())}</b></div><div class="btns"><button class="btn sec sm" data-act="copy">${svg('copy')}Copy link</button><a class="btn pri sm" href="${S.template}.html" target="_blank" rel="noopener">View page</a></div></div>`
     : `<div class="card" style="margin-bottom:32px"><div class="kicker">Set up your page</div><div class="t3">${done} of ${list.length} done. About 2 minutes left.</div><div class="progress"><i style="width:${done/list.length*100}%"></i></div><p class="sub m2" style="margin:8px 0 16px">We filled in what we already know from your YachtWay profile. Check it, pick a look and publish.</p><a class="btn pri" href="#setup">${S.setupDone?'Continue setup':'Start setup'}</a></div>`;
@@ -392,14 +393,14 @@ V.home = () => {
     <div class="head"><div><h1 class="lt">Hi ${PROFILE.first}</h1><p class="sub m2">Your broker website. Edit it any time.</p></div></div>
     ${top}
     <section class="sec"><h2>Last 7 days</h2><div class="cards">
-      ${[['Visitors','1,284','+18%'],['Messages','23','+6'],['Calls and WhatsApp','41','+12'],['Boat views','3,906','+9%']].map(([k,n,d])=>`<a class="card stat" href="#stats"><div class="fn m2">${k}</div><div class="n">${n}</div><div class="d">${d}</div></a>`).join('')}
+      ${[['Visitors','1,284','+18%'],['Messages','23','+6'],['Call and WhatsApp taps','41','+12'],['Boat views','3,906','+9%']].map(([k,n,d])=>`<a class="card stat" href="#stats"><div class="fn m2">${k}</div><div class="n">${n}</div><div class="d">${d}</div></a>`).join('')}
     </div></section>
-    ${sec(`New messages`, unread.length ? unread.map(l=>row({t:esc(l.name),d:esc(l.msg),img:`<span class="initial">${l.name.split(' ').map(w=>w[0]).join('')}</span>`,trail:leadBadge(l)+`<span class="fn m3">${l.when}</span>`,on:'lead:'+l.id})).join('') : row({t:'No new messages',d:'New messages from your page show here and in your email.'}), `<a href="#messages" class="hl" style="color:var(--label)">See all messages</a>`)}
-    ${S.published ? '' : sec('Before you publish', list.map(c=>row({t:c.k,trail:c.ok?`<span class="badge b-green">Done</span>`:`<span class="badge b-orange">To do</span>`,href:c.go})).join(''), 'Google sees your page once every item is done.')}
+    ${sec('Messages', row({t:'Messages go to your YachtWay chat',d:'Every message from your page lands in the same chat as your listings, with an email too.',ic:'msg',on:'toast:Opens your YachtWay chat'}))}
+    ${S.published ? '' : sec('Before you publish', list.map(checkRow).join(''), 'Your page can go live and Google can see it once your name, office address, photo and one boat are in. The rest helps you rank higher.')}
     ${sec('Quick edits', [
       row({t:'Headline and intro',d:esc(S.headline||PROFILE.name),ic:'text',href:'#edit/hero'}),
       row({t:'Boats on your page',d:`${S.boats.filter(b=>b.on).length} of ${S.boats.length} showing`,ic:'store',href:'#boats'}),
-      row({t:'Template and font',d:`${TEMPLATES[S.template].name}, ${FONTS[S.font].name}`,ic:'look',href:'#look'}),
+      row({t:'Template, colors and font',d:`${TEMPLATES[S.template].name}, ${THEMES[S.theme||'onyx'][0]}, ${FONTS[S.font].name}`,ic:'look',href:'#look'}),
       row({t:'Boat shows',d:`${S.shows.length} upcoming`,ic:'cal',href:'#edit/shows'}),
     ].join(''))}
     ${sec('Grow your page', [
@@ -407,11 +408,8 @@ V.home = () => {
       row({t:'Book a photoshoot',d:'Photos, video and a 3D Tour for a listing.',ic:'cam',on:'photoshoot'}),
       row({t:'Your own domain',d:S.domain?esc(S.domain):'yourname.com for $49 a year.',ic:'globe',href:'#settings'}),
     ].join(''))}
-    ${sec('More', [row({t:'Analytics',ic:'chart',href:'#stats'}),row({t:'Address and domain',ic:'set',href:'#settings'}),row({t:'Start setup again',ic:'grid',href:'#setup'})].join(''))}
   </div>`;
 };
-
-const leadBadge = l => l.type==='sell' ? '<span class="badge b-green">Selling</span>' : l.type==='buy' ? '<span class="badge b-blue">Buying</span>' : '<span class="badge b-slate">Other</span>';
 
 /* Edit page: the page order is fixed; optional sections can be hidden */
 const SECTIONS = [
@@ -430,29 +428,33 @@ V.edit = () => `<div class="split"><div class="col">
   ${sec('Sections', SECTIONS.map(s => {
     const vis = s.fixed ? '<span class="fn m3">Always on</span>' : toggle('sections.'+s.k, S.sections[s.k], 'Show '+s.t);
     return `<div class="row ic"><span class="ico">${svg(s.ic)}</span><a class="main" href="${s.href||'#edit/'+s.k}"><span class="t" style="display:block">${s.t}</span><span class="d" style="display:block">${s.d()}</span></a><span class="trail">${vis}<a href="${s.href||'#edit/'+s.k}" aria-label="Edit ${s.t}" style="display:grid;place-items:center;width:28px;height:44px">${chev}</a></span></div>`;
-  }).join(''), 'Your name, photo, company, license, bio and social links come from your YachtWay profile.')}
+  }).join(''), 'Your name, photo, company, license, bio, languages and social links come from your YachtWay profile.')}
   ${sec('From your profile', [
     row({t:PROFILE.name,d:`${PROFILE.company} · License ${PROFILE.license}`,img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,href:'#edit/profile'}),
   ].join(''))}
 </div>${preview()}</div>`;
+
+/* Areas start from the profile city; extra areas are chips */
+const areaList = () => (S.areas||'').split(',').map(a=>a.trim()).filter(Boolean);
+const areasField = id => `<div class="field"><label for="${id}">Areas you cover</label><div class="chips" style="margin-bottom:8px">${areaList().map((a,i)=>`<button class="chip" data-area="${i}" aria-pressed="true" aria-label="Remove ${esc(a)}">${esc(a)} ${svg('x')}</button>`).join('')}</div><div class="row" style="padding:0"><input id="${id}" placeholder="Add a city or area" style="flex:1"><button class="btn plain" data-act="addarea" data-in="${id}">Add</button></div><div class="hint">Starts with ${esc(PROFILE.city)}, ${esc(PROFILE.state)} from your profile.</div></div>`;
 
 /* Section editors open as sheets over the Edit page */
 const EDITORS = {
   profile: () => ({title:'From your profile', body:
     sec('', [['Name',PROFILE.name],['Company',PROFILE.company],['License',PROFILE.license],['Office address',PROFILE.address],['Phone',PROFILE.phone],['Email',PROFILE.email]].map(([k,v])=>row({t:k,trail:`<span class="sub">${esc(v)}</span>`})).join(''),
       'These come from your YachtWay profile so they match everywhere. Change them in profile settings.')
-    + `<a class="btn sec" style="width:100%" href="#" data-act="toast:Opens profile settings">Edit in profile settings</a>`}),
+    + `<a class="btn sec" style="width:100%" href="#" data-act="toast:Opens profile settings. Back to website brings you here.">Edit in profile settings</a>`}),
   hero: () => ({title:'Top of page', body:
     sec('Headline', `<div class="field"><label for="f-headline">Headline</label><input id="f-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}" ${S.template==='c'?'disabled':''}><div class="hint">${S.template==='c'?'Template C leads with your name, so it has no headline.':`${(S.headline||'').length} of 60 characters`}</div></div>
       <div class="field"><label for="f-intro">Intro line</label><textarea id="f-intro" data-f="intro" maxlength="140" style="min-height:72px">${esc(S.intro)}</textarea><div class="hint">One or two short sentences.</div></div>
-      <div class="field"><label for="f-areas">Areas you cover</label><input id="f-areas" data-f="areas" value="${esc(S.areas)}"><div class="hint">Separate with commas.</div></div>`)
-    + sec('Numbers under the headline', [['sold','Boats sold','120'],['years','Years in the industry','8'],['listed','Boats listed now',String(S.boats.filter(b=>b.on).length)],['rating','Client rating','4.9']].map(([k,t,v])=>row({t,d:v,trail:toggle('stats.'+k,S.stats[k],t)})).join(''),'Numbers come from your YachtWay record. You choose which ones show.')}),
+      ${areasField('f-areas')}`)
+    + sec('Numbers under the headline', [['sold','Boats sold','120'],['years','On YachtWay since',String(PROFILE.onYachtWaySince)],['listed','Boats listed now',String(S.boats.filter(b=>b.on).length)],['rating','Client rating','4.9']].map(([k,t,v])=>row({t,d:v,trail:toggle('stats.'+k,S.stats[k],t)})).join(''),'Numbers come from your YachtWay record. You choose which ones show.')}),
   featured: () => ({title:"Today's pick", body:
     sec('Boat', S.boats.filter(b=>b.on).map(b=>`<button class="row" data-feat="${b.id}"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${b.featured?`<span class="tick" style="visibility:visible">${svg('check')}</span>`:''}</span></button>`).join(''))
     + sec('Your note', `<div class="field"><label for="f-note">Why this boat is worth a look</label><input id="f-note" data-f="featuredNote" maxlength="120" placeholder="Fresh service, one owner, ready for the Bahamas." value="${esc(S.featuredNote)}"><div class="hint">One line.</div></div>`)}),
   about: () => { const w = words(S.bio); return {title:'About you', body:
-    sec('Bio', `<div class="field"><label for="f-bio">Your YachtWay profile bio</label><textarea id="f-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`, 'One bio for YachtWay and your page. Change it here or on your profile and both update. Google sees your page once it has 40 words or more.')
-    + `<div class="field"><label for="f-lang">Languages you speak</label><input id="f-lang" data-f="languages" value="${esc(S.languages||'')}"></div>`
+    sec('Bio', `<div class="field"><label for="f-bio">Your YachtWay profile bio</label><textarea id="f-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`, 'One bio for YachtWay and your page. Change it here or on your profile and both update. A bio of 40 words or more helps Google rank your page.')
+    + sec('Languages you speak', `<div class="field"><label for="f-lang">Languages</label><input id="f-lang" data-f="languages" value="${esc(S.languages||'')}"></div>`, 'This saves to your YachtWay profile, so your profile and your page always match.')
     + `<button class="btn sec" style="width:100%" data-act="bio">Write a first draft for me</button>`
     + `<div style="height:24px"></div>` + sec('From your profile', [['License',PROFILE.license],['Brokerage',PROFILE.company]].map(([k,v])=>row({t:k,trail:`<span class="sub">${v}</span>`})).join(''))}; },
   reviews: () => ({title:'Reviews', body:
@@ -462,7 +464,7 @@ const EDITORS = {
     sec('Tap everything you do', `<div class="chips">${Object.entries(SERVICES).map(([k,t])=>`<button class="chip" data-svc="${k}" aria-pressed="${S.services.includes(k)}">${S.services.includes(k)?svg('check'):''}${t}</button>`).join('')}${S.custom.map((t,i)=>`<button class="chip" data-cust="${i}" aria-pressed="true" aria-label="Remove ${esc(t)}">${esc(t)} ${svg('x')}</button>`).join('')}</div>`)
     + sec('Something else?', `<div class="row"><input id="f-cust" placeholder="Type a service" style="flex:1;border:0;outline:0;font-size:17px;background:transparent;min-height:22px"><button class="btn plain" data-act="addsvc">Add</button></div>`)}),
   shows: () => ({title:'Boat shows', body:
-    sec('Upcoming shows', S.shows.map(s=>row({t:esc(s.name),d:`${esc(s.dates)} · Booth ${esc(s.booth)}`,trail:s.booking?'<span class="badge b-green">Bookable</span>':'',on:'show:'+s.id})).join(''), 'Bookable shows let visitors pick a time from your calendar.')
+    sec('Upcoming shows', S.shows.map(s=>row({t:esc(s.name),d:`${esc(s.dates)} · ${esc(s.city)} · Booth ${esc(s.booth)}`,trail:s.booking?'<span class="badge b-green">Bookable</span>':'',on:'show:'+s.id})).join(''), 'Bookable shows let visitors pick a time from your calendar.')
     + `<button class="btn sec" style="width:100%" data-on="show:new">${svg('plus')}Add a show</button>`}),
   videos: () => ({title:'Videos', body:
     sec('Your YouTube videos', S.videos.map((v,i)=>row({t:esc(v.title),d:esc(v.url),ic:'play',trail:`<button class="btn plain red sm" data-delvid="${i}">Remove</button>`})).join('') || row({t:'No videos yet'}), 'Up to 6 videos.')
@@ -478,25 +480,27 @@ const EDITORS = {
 const showEditor = id => {
   const s = id==='new' ? {id:Date.now(),name:'',dates:'',city:'',booth:'',booking:true,isNew:true} : S.shows.find(x=>x.id==id);
   sheet(s.isNew?'Add a show':'Boat show', `${sec('',`
-    <div class="field"><label for="s-name">Show</label><input id="s-name" value="${esc(s.name)}" placeholder="Fort Lauderdale International Boat Show"></div>
+    <div class="field"><label for="s-name">Show</label><select id="s-name"><option value="">Pick a show</option>${BOAT_SHOWS.map(([n,c])=>`<option value="${esc(n)}" ${s.name===n?'selected':''}>${esc(n)}</option>`).join('')}</select><div class="hint">Shows on YachtWay. Ask us to add one that is missing.</div></div>
     <div class="field"><label for="s-dates">Dates</label><input id="s-dates" value="${esc(s.dates)}" placeholder="28 October to 1 November 2027"></div>
-    <div class="field"><label for="s-city">City</label><input id="s-city" value="${esc(s.city)}"></div>
     <div class="field"><label for="s-booth">Booth</label><input id="s-booth" value="${esc(s.booth)}"></div>`)}
     ${sec('', row({t:'Let visitors book a time',d:'Times come from your calendar.',trail:`<input type="checkbox" class="sw" id="s-book" ${s.booking?'checked':''} aria-label="Let visitors book a time">`}))}
     ${s.isNew?'':`<button class="btn sec red" style="width:100%" data-delshow="${s.id}">Remove show</button>`}`,
     {done:()=>{ const v = k => document.getElementById(k).value.trim();
-      if(!v('s-name')){ toast('Add the show name first'); document.getElementById('s-name').focus(); return false; }
-      Object.assign(s,{name:v('s-name'),dates:v('s-dates'),city:v('s-city'),booth:v('s-booth'),booking:document.getElementById('s-book').checked});
+      if(!v('s-name')){ toast('Pick a show first'); document.getElementById('s-name').focus(); return false; }
+      Object.assign(s,{name:v('s-name'),dates:v('s-dates'),city:(BOAT_SHOWS.find(x=>x[0]===v('s-name'))||[])[1]||'',booth:v('s-booth'),booking:document.getElementById('s-book').checked});
       if(s.isNew){ delete s.isNew; S.shows.push(s); } save(); openEditor('shows'); return false; },
      back:()=>openEditor('shows')});
 };
 
 /* Look */
 V.look = () => `<div class="split"><div class="col">
-  <div class="head"><div><h1 class="lt">Look</h1><p class="sub m2">Pick a template and a font. Change them any time.</p></div><button class="btn sec sm pvbtn" data-act="preview">Preview</button></div>
+  <div class="head"><div><h1 class="lt">Look</h1><p class="sub m2">Pick a template, colors and a font. Change them any time.</p></div><button class="btn sec sm pvbtn" data-act="preview">Preview</button></div>
   <section class="sec"><h2>Template</h2><div class="tpls">${Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl" data-tpl="${k}" aria-pressed="${S.template===k}"><div class="shot"><iframe src="${k}.html" loading="lazy" tabindex="-1" title="${t.name}" scrolling="no"></iframe></div><div class="meta"><div><b>${t.name}</b><span>${t.body}</span></div><span class="tick">${svg('check')}</span></div></button>`).join('')}</div></section>
+  ${themePicker()}
   <section class="sec"><h2>Font</h2><div class="fonts">${Object.entries(FONTS).map(([k,f])=>`<button class="font" data-font="${k}" aria-pressed="${S.font===k}"><span class="h" style="font-family:'${f.h}'">Boats for sale</span><span class="p" style="font-family:'${f.b}'">Every listing checked and walked in person.</span><span class="n">${f.name}</span><span class="tick">${svg('check')}</span></button>`).join('')}</div><p class="foot">${FONTS[S.font].h} for headings, ${FONTS[S.font].b} for text.</p></section>
 </div>${preview()}</div>`;
+
+const themePicker = () => sec('Colors', Object.entries(THEMES).map(([k,[n,ink,paper,acc]])=>row({t:n,img:`<span aria-hidden="true" style="display:flex;margin-right:4px">${[ink,paper,acc].map((c,i)=>`<i style="width:22px;height:22px;border-radius:50%;background:${c};border:1px solid rgba(0,0,0,.12);margin-left:${i?-6:0}px"></i>`).join('')}</span>`,trail:(S.theme||'onyx')===k?`<span class="tick" style="visibility:visible">${svg('check')}</span>`:'',on:'clr:'+k})).join(''), 'Text, background and accent color for your page.');
 
 /* Live preview: the real template with the broker's font and copy applied */
 let pvMode = 'desk';
@@ -524,32 +528,9 @@ V.boats = () => {
   const on = S.boats.filter(b=>b.on).length;
   return `<div class="col">
   <div class="head"><div><h1 class="lt">Boats</h1><p class="sub m2">Your YachtWay listings. ${on} of ${S.boats.length} show on your page.</p></div><a class="btn sec sm" href="#" data-act="toast:Opens My listings on YachtWay">Manage listings</a></div>
-  ${sec('On your page', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)} · ${b.len} ft · ${esc(b.loc)}</span><span style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${b.featured?'<span class="badge b-slate">Today\'s pick</span>':''}${b.photos==='imported'?`<span class="badge b-green">${b.count} photos</span>`:b.photos==='queued'?'<span class="badge b-orange">Photos in line</span>':`<button class="badge b-gray" data-photos="${b.id}">${svg('photo','width="12" height="12"')}Add photos</button>`}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''), 'Boat pages on your site link to the YachtWay listing so Google counts both.')}
+  ${sec('On your page', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)} · ${b.len} ft · ${esc(b.loc)}</span><span style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${b.featured?'<span class="badge b-slate">Today\'s pick</span>':''}${b.count?`<span class="badge b-green">${b.count} photos</span>`:`<button class="badge b-gray" data-act="toast:Opens this listing on YachtWay to add photos">${svg('photo','width="12" height="12"')}Add photos on the listing</button>`}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''), 'Boat pages on your site link to the YachtWay listing so Google counts both.')}
   ${sec('Show', [row({t:'Show new listings automatically',d:'New YachtWay listings appear on your page right away.',trail:toggle('autoBoats',S.autoBoats!==false,'Show new listings automatically')})].join(''))}
 </div>`;
-};
-
-/* Messages */
-let leadFilter = 'all';
-V.messages = () => {
-  const list = S.leads.filter(l => leadFilter==='all' || l.type===leadFilter);
-  return `<div class="col">
-  <div class="head"><div><h1 class="lt">Messages</h1><p class="sub m2">From your page. You also get each one by email.</p></div></div>
-  <div class="seg" role="group" aria-label="Filter messages" style="margin-bottom:16px">${[['all','All'],['buy','Buying'],['sell','Selling'],['other','Other']].map(([k,t])=>`<button data-lf="${k}" aria-pressed="${leadFilter===k}">${t}</button>`).join('')}</div>
-  ${sec('', list.length ? list.map(l=>row({t:`${l.unread?'<b>':''}${esc(l.name)}${l.unread?'</b>':''}`,d:esc(l.about||l.msg),img:`<span class="initial">${l.name.split(' ').map(w=>w[0]).join('')}</span>`,trail:leadBadge(l)+`<span class="fn m3">${l.when}</span>`,on:'lead:'+l.id})).join('') : row({t:'No messages here yet'}))}
-</div>`;
-};
-const leadSheet = id => {
-  const l = S.leads.find(x=>x.id==id); l.unread = false; save(); render();
-  const wa = 'https://wa.me/' + (l.phone||'').replace(/\D/g,'');
-  sheet(l.name, `
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">${leadBadge(l)}<span class="fn m2">${l.when}</span></div>
-    ${sec('', `<p class="quote">${esc(l.msg)}</p>`)}
-    ${l.about ? sec('About a boat', row({t:esc(l.about),ic:'store'})) : ''}
-    ${l.boat ? sec('Their boat', `<dl class="kv"><dt>Year</dt><dd>${l.boat.year}</dd><dt>Make</dt><dd>${esc(l.boat.make)}</dd><dt>Model</dt><dd>${esc(l.boat.model)}</dd><dt>Engine hours</dt><dd>${esc(l.boat.hours)}</dd><dt>Engines</dt><dd>${esc(l.boat.engines)}</dd></dl>`)
-      + sec('VATO report', row({t:'Market analysis and VATO report',d:`Ready. ${5-S.vatoUsed} of 5 free reports left.`,ic:'chart',trail:'<span class="badge b-green">Ready</span>',on:'toast:Opens the VATO report'})) : ''}
-    ${sec('Reply', [l.phone?row({t:'Call',d:esc(l.phone),ic:'phone',href:'tel:'+l.phone.replace(/[^\d+]/g,'')}):'', l.phone?row({t:'WhatsApp',d:esc(l.phone),ic:'wa',href:wa}):'', row({t:'Email',d:esc(l.email),ic:'mail',href:'mailto:'+l.email})].join(''))}
-  `);
 };
 
 /* Analytics */
@@ -559,19 +540,20 @@ V.stats = () => {
   const max = Math.max(...data), total = data.reduce((a,b)=>a+b,0);
   const labels = range===7 ? ['Tue','Wed','Thu','Fri','Sat','Sun','Mon'] : ['10 Oct','','','','','','','','','','','','','','','25 Oct','','','','','','','','','','','','','','Today'];
   return `<div class="col">
+  <div class="seg" role="group" aria-label="Analytics for" style="margin-bottom:16px"><button aria-pressed="false" data-act="toast:Opens your profile analytics on YachtWay">Profile</button><button aria-pressed="true">Website</button></div>
   <div class="head"><div><h1 class="lt">Analytics</h1><p class="sub m2">Who visits your page and what they do.</p></div><div class="seg" role="group" aria-label="Range">${[[7,'7 days'],[30,'30 days']].map(([k,t])=>`<button data-rg="${k}" aria-pressed="${range===k}">${t}</button>`).join('')}</div></div>
   <section class="sec"><div class="card"><div class="fn m2">Visitors</div><div class="t1">${total.toLocaleString('en-US')}</div><div class="bars" role="img" aria-label="Visitors per day">${data.map(v=>`<i style="height:${v/max*100}%" title="${v}"></i>`).join('')}</div><div class="axis"><span>${labels[0]}</span><span>${labels[labels.length-1]}</span></div></div></section>
-  <section class="sec"><div class="cards">${[['Messages',range===7?'23':'94'],['Calls',range===7?'17':'61'],['WhatsApp',range===7?'24':'88'],['Show bookings',range===7?'5':'12']].map(([k,n])=>`<div class="card stat"><div class="fn m2">${k}</div><div class="n">${n}</div></div>`).join('')}</div></section>
+  <section class="sec"><div class="cards">${[['Messages',range===7?'23':'94'],['Call taps',range===7?'17':'61'],['WhatsApp taps',range===7?'24':'88'],['Show bookings',range===7?'5':'12']].map(([k,n])=>`<div class="card stat"><div class="fn m2">${k}</div><div class="n">${n}</div></div>`).join('')}</div></section>
   ${sec('Most viewed boats', S.boats.slice(0,4).map((b,i)=>row({t:esc(b.name),img:`<img class="thumb" src="${IMG+b.img}" alt="">`,trail:`<span class="sub">${[1204,866,640,512][i]*(range===7?1:4)} views</span>`})).join(''))}
   ${sec('Where visitors come from', [['Google',46],['YachtWay',31],['Instagram',14],['Direct link',9]].map(([k,p])=>`<div class="row"><span class="main"><span class="t" style="display:block">${k}</span><span class="progress" style="display:block;margin:6px 0 0"><i style="width:${p}%;background:var(--label)"></i></span></span><span class="trail sub">${p}%</span></div>`).join(''))}
 </div>`;
 };
 
 /* Settings */
-const RESERVED = ['boats','brokers','admin','yachts','search','login'];
 V.settings = () => `<div class="col">
   <div class="head"><div><h1 class="lt">Address and domain</h1><p class="sub m2">Where people find your page.</p></div></div>
-  ${sec('Page address', `<div class="field"><label for="f-slug">yachtway.com/</label><input id="f-slug" value="${esc(S.slug)}" autocapitalize="off" spellcheck="false"><div class="hint ok" id="slugHint">This address is yours.</div></div>`, 'Old links keep working when you change it.')}
+  ${sec('Page address', row({t:'yachtway.com/brokers/'+esc(S.slug),d:'Same address as your YachtWay profile.',ic:'link',on:'toast:Opens profile settings. Back to website brings you here.'}), 'Change it in profile settings. Old links keep working.')}
+  ${sec('Your page goes with you', row({t:'This page is yours',d:'If you move to another brokerage, your page, address, domain and content move with you. Company details update from your profile.',ic:'user'}))}
   ${sec('Your own domain', S.domain
     ? row({t:esc(S.domain),d:S.domainStatus==='active'?'Active':'Requested. We set it up and email you.',ic:'globe',trail:`<button class="btn plain red sm" data-act="rmdomain">Remove</button>`})
     : `<div class="field"><label for="f-domain">Domain</label><input id="f-domain" placeholder="yourname.com" autocapitalize="off" spellcheck="false" inputmode="url"><div class="hint">Point your own address to this page for $49 a year.</div></div>`,
@@ -583,29 +565,36 @@ V.settings = () => `<div class="col">
   ${sec('Help', row({t:'Want help setting it up?',d:'Call (800) 567-9929 and we set it up with you.',ic:'phone',href:'tel:+18005679929'}))}
 </div>`;
 
+/* More: mobile tab for the pages the tab bar has no room for */
+V.more = () => `<div class="col">
+  <div class="head"><div><h1 class="lt">More</h1></div></div>
+  ${sec('', [row({t:'Analytics',ic:'chart',href:'#stats'}),row({t:'Address and domain',ic:'set',href:'#settings'}),row({t:'Messages',d:'In your YachtWay chat',ic:'msg',on:'toast:Opens your YachtWay chat'}),row({t:'Start setup again',ic:'grid',href:'#setup'})].join(''))}
+</div>`;
+
 /* ---------- Setup wizard: 4 short steps, prefilled from the profile ---------- */
 let step = 0;
 const STEPS = ['Check your details','Pick a look','Pick your boats','Write your bio and publish'];
 function setupView(){
   const body = [
     () => `<div class="kicker">Step 1 of 4</div><h1 class="t1" style="margin-bottom:6px">Check your details</h1><p class="sub m2" style="margin-bottom:24px">We filled these in from your YachtWay profile.</p>
-      ${sec('', [row({t:PROFILE.name,d:'Yacht broker',img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,trail:`<span class="badge b-green">${svg('check','width="12" height="12"')}From profile</span>`}),row({t:PROFILE.company,d:`License ${PROFILE.license}`,ic:'store'}),row({t:'Office',d:PROFILE.address,ic:'home'}),row({t:'Phone and email',d:`${PROFILE.phone} · ${PROFILE.email}`,ic:'phone'})].join(''),'Something wrong? Change it in profile settings and it updates here too.')}
-      ${sec('Your headline', `<div class="field"><label for="w-headline">Headline</label><input id="w-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}"></div><div class="field"><label for="w-areas">Areas you cover</label><input id="w-areas" data-f="areas" value="${esc(S.areas)}"></div>`)}`,
+      ${sec('', [row({t:PROFILE.name,d:'Yacht broker',img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,trail:`<span class="badge b-green">${svg('check','width="12" height="12"')}From profile</span>`}),row({t:PROFILE.company,d:`License ${PROFILE.license}`,ic:'store'}),row({t:'Office',d:PROFILE.address,ic:'home'}),row({t:'Phone and email',d:`${PROFILE.phone} · ${PROFILE.email}`,ic:'phone'})].join(''),'Something wrong? Change it in profile settings. Back to website brings you here.')}
+      ${sec('Your headline', `<div class="field"><label for="w-headline">Headline</label><input id="w-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}"></div>${areasField('w-areas')}`)}`,
     () => `<div class="kicker">Step 2 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick a look</h1><p class="sub m2" style="margin-bottom:24px">Every template shows the same things. You can change it any time.</p>
       <section class="sec"><div class="tpls">${Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl" data-tpl="${k}" aria-pressed="${S.template===k}"><div class="shot"><iframe src="${k}.html" loading="lazy" tabindex="-1" title="${t.name}" scrolling="no"></iframe></div><div class="meta"><div><b>${t.name}</b><span>${t.body}</span></div><span class="tick">${svg('check')}</span></div></button>`).join('')}</div></section>
+      ${themePicker()}
       <section class="sec"><h2>Font</h2><div class="fonts">${Object.entries(FONTS).map(([k,f])=>`<button class="font" data-font="${k}" aria-pressed="${S.font===k}"><span class="h" style="font-family:'${f.h}'">Boats for sale</span><span class="p" style="font-family:'${f.b}'">Walked in person.</span><span class="n">${f.name}</span><span class="tick">${svg('check')}</span></button>`).join('')}</div></section>
       <button class="btn sec" style="width:100%" data-act="preview">Preview my page</button>`,
     () => `<div class="kicker">Step 3 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick your boats</h1><p class="sub m2" style="margin-bottom:24px">Your YachtWay listings are already here. Turn off any you do not want to show.</p>
       ${sec('Your listings', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''))}
       <p class="fn m2" style="padding:0 16px">New listings you create on YachtWay show here on their own.</p>`,
     () => { const w = words(S.bio), list = checklist();
-      return `<div class="kicker">Step 4 of 4</div><h1 class="t1" style="margin-bottom:6px">Write your bio and publish</h1><p class="sub m2" style="margin-bottom:24px">Google sees your page once every item is done.</p>
+      return `<div class="kicker">Step 4 of 4</div><h1 class="t1" style="margin-bottom:6px">Write your bio and publish</h1><p class="sub m2" style="margin-bottom:24px">Name, office address, photo and one boat are enough to publish. The rest helps you rank higher.</p>
       ${sec('About you', `<div class="field"><label for="w-bio">Your YachtWay profile bio</label><textarea id="w-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`)}
       <button class="btn sec" style="width:100%;margin:-16px 0 32px" data-act="bio">Write a first draft for me</button>
-      ${sec('Your page address', row({t:'yachtway.com/'+esc(S.slug),ic:'globe',href:'#settings'}))}
-      ${sec('Checklist', list.map(c=>row({t:c.k,trail:c.ok?`<span class="badge b-green">Done</span>`:`<span class="badge b-orange">To do</span>`})).join(''))}`; },
+      ${sec('Your page address', row({t:'yachtway.com/brokers/'+esc(S.slug),d:'Same address as your YachtWay profile.',ic:'globe',href:'#settings'}))}
+      ${sec('Checklist', list.map(checkRow).join(''))}`; },
   ][step]();
-  const ready = checklist().every(c=>c.ok);
+  const ready = canPublish();
   return `<div class="wiz" role="dialog" aria-modal="true" aria-label="Set up your page">
     <header><a class="btn plain" href="#home">Close</a><div class="steps" aria-label="Step ${step+1} of 4">${STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div><span style="width:64px"></span></header>
     <div class="body"><div class="col">${body}</div></div>
@@ -619,7 +608,6 @@ function sheet(title, html, opts={}){
   sheetOpts = opts;
   const layer = document.getElementById('layer');
   layer.innerHTML = `<div class="scrim" data-act="close"><div class="sheet ${opts.full?'full':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><header>${opts.back?'<button class="btn plain" data-act="back">Back</button>':'<span></span>'}<b>${esc(title)}</b><button class="btn plain r" data-act="done">Done</button></header><div class="body">${html}</div></div></div>`;
-  layer.querySelector('.sheet').addEventListener('click', e => e.stopPropagation(), true);
   const first = layer.querySelector('.body input:not([disabled]),.body textarea,.body button');
   (first||layer.querySelector('[data-act=done]')).focus({preventScroll:true});
   layer.querySelectorAll('iframe.live-pv').forEach(f => f.addEventListener('load', () => applyPreview(f)));
@@ -650,11 +638,6 @@ document.addEventListener('input', e => {
     if (t.dataset.f === 'bio') { const w = words(t.value), h = document.getElementById('bioHint'); h.className = 'hint' + (w>=40?' ok':''); h.textContent = w>=40 ? `${w} words` : `${w} words. Add ${40-w} more words.`; }
     if (t.dataset.f === 'headline' && t.nextElementSibling) t.nextElementSibling.textContent = `${t.value.length} of 60 characters`;
   }
-  if (t.id === 'f-slug') { const v = t.value.toLowerCase(), h = document.getElementById('slugHint');
-    const ok = /^[a-z0-9-]{3,60}$/.test(v), res = RESERVED.includes(v);
-    h.className = 'hint ' + (ok && !res ? 'ok' : 'bad');
-    h.textContent = !ok ? 'Use 3 to 60 letters, numbers or dashes.' : res ? 'This address is reserved. Try another.' : 'This address is free.';
-    if (ok && !res) { S.slug = v; save(); } }
   if (t.id === 'f-vid') { const h = document.getElementById('vidHint'), ok = /(youtube\.com\/(watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)[\w-]{11}/.test(t.value);
     h.className = 'hint ' + (t.value ? (ok?'ok':'bad') : ''); h.textContent = !t.value ? 'Paste a YouTube link.' : ok ? 'Link checked' : 'This does not look like a YouTube link yet.'; }
 });
@@ -670,27 +653,22 @@ document.addEventListener('change', e => {
   if (a === 'boat' && document.querySelector('.wiz')) document.getElementById('layer').innerHTML = setupView();
 });
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-act],[data-on],[data-tpl],[data-font],[data-pv],[data-lf],[data-rg],[data-svc],[data-cust],[data-feat],[data-wiz],[data-photos],[data-delvid],[data-delshow]');
+  const el = e.target.closest('[data-act],[data-on],[data-tpl],[data-font],[data-pv],[data-rg],[data-svc],[data-cust],[data-area],[data-feat],[data-wiz],[data-delvid],[data-delshow]');
   if (!el) return;
   const d = el.dataset, inWiz = !!document.querySelector('.wiz');
   if (d.tpl) { S.template = d.tpl; if (TEMPLATES[d.tpl].headline && Object.values(TEMPLATES).some(t=>t.headline===S.headline)) S.headline = TEMPLATES[d.tpl].headline; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
   if (d.font) { S.font = d.font; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
   if (d.pv) { pvMode = d.pv; render(); return; }
-  if (d.lf) { leadFilter = d.lf; render(); return; }
   if (d.rg) { range = +d.rg; render(); return; }
   if (d.wiz) { step = Math.max(0, Math.min(3, step + +d.wiz)); S.setupDone = true; save(); document.getElementById('layer').innerHTML = setupView(); document.querySelector('.wiz .body').scrollTo(0,0); return; }
   if (d.svc) { const i = S.services.indexOf(d.svc); i < 0 ? S.services.push(d.svc) : S.services.splice(i,1); save(); openEditor('services'); return; }
+  if (d.area) { const l = areaList(); l.splice(+d.area,1); S.areas = l.join(', '); save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('hero'); return; }
   if (d.cust) { S.custom.splice(+d.cust,1); save(); openEditor('services'); return; }
   if (d.feat) { S.boats.forEach(b=>b.featured = b.id==d.feat); save(); openEditor('featured'); render(); return; }
   if (d.delvid) { S.videos.splice(+d.delvid,1); save(); openEditor('videos'); return; }
   if (d.delshow) { S.shows = S.shows.filter(s=>s.id!=d.delshow); save(); openEditor('shows'); return; }
-  if (d.photos) { const b = S.boats.find(x=>x.id==d.photos);
-    sheet('Photos for this boat', `${sec(esc(b.name), `<div class="field"><label for="f-ph">Drive or Dropbox folder link</label><input id="f-ph" inputmode="url" placeholder="https://drive.google.com/..."><div class="hint">Photos go to the YachtWay listing for this boat, so your page and YachtWay show the same set. One link, one boat.</div></div>`)}`,
-      {done:()=>{ const v = document.getElementById('f-ph').value.trim(); if (!v) return true;
-        if (!/^https?:\/\/([\w-]+\.)?(drive\.google\.com|dropbox\.com)\//i.test(v)) { toast('Paste a Google Drive or Dropbox link'); return false; }
-        b.photos = 'queued'; save(); render(); toast('Photos in line'); return true; }}); return; }
   if (d.on) { const [kind, id] = d.on.split(':');
-    if (kind === 'lead') return leadSheet(id);
+    if (kind === 'clr') { S.theme = id; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
     if (kind === 'show') return showEditor(id);
     if (kind === 'toast') return toast(d.on.slice(6));
     if (kind === 'photoshoot') return sheet('Book a photoshoot', sec('Pick a listing', S.boats.filter(b=>b.on).map(b=>row({t:esc(b.name),img:`<img class="thumb" src="${IMG+b.img}" alt="">`,on:'toast:Photoshoot request sent'})).join(''), 'Photos, video and a 3D Tour. We confirm the date by email.'));
@@ -706,6 +684,7 @@ document.addEventListener('click', e => {
       if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(v)) { toast('Enter a domain like yourname.com'); return; }
       S.domain = v; S.domainStatus = 'requested'; save(); render(); toast('Domain requested'); return; }
     case 'rmdomain': S.domain = null; S.domainStatus = null; save(); render(); return;
+    case 'addarea': { const v = document.getElementById(d.in).value.trim(); if (!v) return; S.areas = [...areaList(), v].join(', '); save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('hero'); return; }
     case 'addsvc': { const i = document.getElementById('f-cust'), v = i.value.trim(); if (v) { S.custom.push(v); save(); openEditor('services'); } return; }
     case 'addvid': { const i = document.getElementById('f-vid'), m = i.value.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
       if (!m) { toast('Paste a YouTube link'); return; } if (S.videos.length >= 6) { toast('Up to 6 videos'); return; }
