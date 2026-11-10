@@ -571,24 +571,29 @@ V.more = () => `<div class="col">
   ${sec('', [row({t:'Analytics',ic:'chart',href:'#stats'}),row({t:'Address and domain',ic:'set',href:'#settings'}),row({t:'Messages',d:'In your YachtWay chat',ic:'msg',on:'toast:Opens your YachtWay chat'}),row({t:'Start setup again',ic:'grid',href:'#setup'})].join(''))}
 </div>`;
 
-/* ---------- Setup wizard: 4 short steps, prefilled from the profile ---------- */
+/* ---------- Setup wizard: 6 short steps, prefilled from the profile (same as the FE build) ---------- */
 let step = 0;
-const STEPS = ['Check your details','Pick a look','Pick your boats','Write your bio and publish'];
+const STEPS = ['Your details','Look','Services and videos','Listings','Photos','Publish'];
+const wizRender = () => { document.getElementById('layer').innerHTML = setupView(); };
 function setupView(){
   const body = [
-    () => `<div class="kicker">Step 1 of 4</div><h1 class="t1" style="margin-bottom:6px">Check your details</h1><p class="sub m2" style="margin-bottom:24px">We filled these in from your YachtWay profile.</p>
+    () => `<div class="kicker">Step 1 of 6</div><h1 class="t1" style="margin-bottom:6px">Your details</h1><p class="sub m2" style="margin-bottom:24px">We filled these in from your YachtWay profile.</p>
       ${sec('', [row({t:PROFILE.name,d:'Yacht broker',img:`<img class="avatar" src="${PROFILE.photo}" alt="">`,trail:`<span class="badge b-green">${svg('check','width="12" height="12"')}From profile</span>`}),row({t:PROFILE.company,d:`License ${PROFILE.license}`,ic:'store'}),row({t:'Office',d:PROFILE.address,ic:'home'}),row({t:'Phone and email',d:`${PROFILE.phone} · ${PROFILE.email}`,ic:'phone'})].join(''),'Something wrong? Change it in profile settings. Back to website brings you here.')}
       ${sec('Your headline', `<div class="field"><label for="w-headline">Headline</label><input id="w-headline" data-f="headline" maxlength="60" value="${esc(S.headline)}"></div>${areasField('w-areas')}`)}`,
-    () => `<div class="kicker">Step 2 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick a look</h1><p class="sub m2" style="margin-bottom:24px">Every template shows the same things. You can change it any time.</p>
+    () => `<div class="kicker">Step 2 of 6</div><h1 class="t1" style="margin-bottom:6px">Pick a look</h1><p class="sub m2" style="margin-bottom:24px">Every template shows the same things. You can change it any time.</p>
       <section class="sec"><div class="tpls">${Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl" data-tpl="${k}" aria-pressed="${S.template===k}"><div class="shot"><iframe src="${k}.html" loading="lazy" tabindex="-1" title="${t.name}" scrolling="no"></iframe></div><div class="meta"><div><b>${t.name}</b><span>${t.body}</span></div><span class="tick">${svg('check')}</span></div></button>`).join('')}</div></section>
       ${themePicker()}
       <section class="sec"><h2>Font</h2><div class="fonts">${Object.entries(FONTS).map(([k,f])=>`<button class="font" data-font="${k}" aria-pressed="${S.font===k}"><span class="h" style="font-family:'${f.h}'">Boats for sale</span><span class="p" style="font-family:'${f.b}'">Walked in person.</span><span class="n">${f.name}</span><span class="tick">${svg('check')}</span></button>`).join('')}</div></section>
       <button class="btn sec" style="width:100%" data-act="preview">Preview my page</button>`,
-    () => `<div class="kicker">Step 3 of 4</div><h1 class="t1" style="margin-bottom:6px">Pick your boats</h1><p class="sub m2" style="margin-bottom:24px">Your YachtWay listings are already here. Turn off any you do not want to show.</p>
+    () => `<div class="kicker">Step 3 of 6</div><h1 class="t1" style="margin-bottom:6px">How can you help owners?</h1><p class="sub m2" style="margin-bottom:24px">This becomes your services list. Add YouTube videos below.</p>
+      ${EDITORS.services().body}${EDITORS.videos().body}`,
+    () => `<div class="kicker">Step 4 of 6</div><h1 class="t1" style="margin-bottom:6px">Pick your boats</h1><p class="sub m2" style="margin-bottom:24px">Your YachtWay listings are already here. Turn off any you do not want to show.</p>
       ${sec('Your listings', S.boats.map(b=>`<div class="row"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${money(b.price)}</span></span><span class="trail">${toggle('boat.'+b.id,b.on,'Show '+b.name)}</span></div>`).join(''))}
       <p class="fn m2" style="padding:0 16px">New listings you create on YachtWay show here on their own.</p>`,
+    () => `<div class="kicker">Step 5 of 6</div><h1 class="t1" style="margin-bottom:6px">Photos for each boat</h1><p class="sub m2" style="margin-bottom:24px">Paste one Drive or Dropbox link per boat. We pull the photos into that listing only.</p>
+      ${sec('Your boats', S.boats.filter(b=>b.on).map(b=>`<div class="row" style="flex-wrap:wrap"><img class="thumb" src="${IMG+b.img}" alt=""><span class="main"><span class="t" style="display:block">${esc(b.name)}</span><span class="d" style="display:block">${b.photos==='imported'?`Imported · ${b.count} photos now`:b.photos==='queued'?'In line':'No photos yet'}</span></span>${b.photos?'':`<span style="display:flex;gap:8px;width:100%;margin-top:8px"><input id="f-pl-${b.id}" placeholder="Drive or Dropbox folder link" aria-label="Photo link for ${esc(b.name)}" style="flex:1;min-width:0;border:1px solid var(--line,#ddd);border-radius:10px;padding:8px 10px;font-size:15px"><button class="btn sec sm" data-act="photolink" data-boat="${b.id}">Add</button></span>`}</div>`).join(''), 'One link, one boat. The folder should hold only that boat.')}`,
     () => { const w = words(S.bio), list = checklist();
-      return `<div class="kicker">Step 4 of 4</div><h1 class="t1" style="margin-bottom:6px">Write your bio and publish</h1><p class="sub m2" style="margin-bottom:24px">Name, office address, photo and one boat are enough to publish. The rest helps you rank higher.</p>
+      return `<div class="kicker">Step 6 of 6</div><h1 class="t1" style="margin-bottom:6px">Ready to go live</h1><p class="sub m2" style="margin-bottom:24px">Name, office address, photo and one boat are enough to publish. The rest helps you rank higher.</p>
       ${sec('About you', `<div class="field"><label for="w-bio">Your YachtWay profile bio</label><textarea id="w-bio" data-f="bio" placeholder="How long you have sold boats, what you know best, where you work and why owners pick you.">${esc(S.bio)}</textarea><div class="hint ${w>=40?'ok':''}" id="bioHint">${w>=40?`${w} words`:`${w} words. Add ${40-w} more words.`}</div></div>`)}
       <button class="btn sec" style="width:100%;margin:-16px 0 32px" data-act="bio">Write a first draft for me</button>
       ${sec('Your page address', row({t:'yachtway.com/brokers/'+esc(S.slug),d:'Same address as your YachtWay profile.',ic:'globe',href:'#settings'}))}
@@ -596,9 +601,9 @@ function setupView(){
   ][step]();
   const ready = canPublish();
   return `<div class="wiz" role="dialog" aria-modal="true" aria-label="Set up your page">
-    <header><a class="btn plain" href="#home">Close</a><div class="steps" aria-label="Step ${step+1} of 4">${STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div><span style="width:64px"></span></header>
+    <header><a class="btn plain" href="#home">Close</a><div class="steps" aria-label="Step ${step+1} of 6">${STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div><span style="width:64px"></span></header>
     <div class="body"><div class="col">${body}</div></div>
-    <footer>${step?`<button class="btn sec" data-wiz="-1">Back</button>`:'<span></span>'}${step<3?`<button class="btn pri" data-wiz="1">Continue</button>`:`<button class="btn pri" data-act="publish" ${ready?'':'disabled'}>Publish page</button>`}</footer>
+    <footer>${step?`<button class="btn sec" data-wiz="-1">Back</button>`:'<span></span>'}${step<5?`<button class="btn pri" data-wiz="1">Continue</button>`:`<button class="btn pri" data-act="publish" ${ready?'':'disabled'}>Publish page</button>`}</footer>
   </div>`;
 }
 
@@ -660,12 +665,12 @@ document.addEventListener('click', e => {
   if (d.font) { S.font = d.font; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
   if (d.pv) { pvMode = d.pv; render(); return; }
   if (d.rg) { range = +d.rg; render(); return; }
-  if (d.wiz) { step = Math.max(0, Math.min(3, step + +d.wiz)); S.setupDone = true; save(); document.getElementById('layer').innerHTML = setupView(); document.querySelector('.wiz .body').scrollTo(0,0); return; }
-  if (d.svc) { const i = S.services.indexOf(d.svc); i < 0 ? S.services.push(d.svc) : S.services.splice(i,1); save(); openEditor('services'); return; }
+  if (d.wiz) { step = Math.max(0, Math.min(5, step + +d.wiz)); S.setupDone = true; save(); document.getElementById('layer').innerHTML = setupView(); document.querySelector('.wiz .body').scrollTo(0,0); return; }
+  if (d.svc) { const i = S.services.indexOf(d.svc); i < 0 ? S.services.push(d.svc) : S.services.splice(i,1); save(); inWiz ? wizRender() : openEditor('services'); return; }
   if (d.area) { const l = areaList(); l.splice(+d.area,1); S.areas = l.join(', '); save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('hero'); return; }
-  if (d.cust) { S.custom.splice(+d.cust,1); save(); openEditor('services'); return; }
+  if (d.cust) { S.custom.splice(+d.cust,1); save(); inWiz ? wizRender() : openEditor('services'); return; }
   if (d.feat) { S.boats.forEach(b=>b.featured = b.id==d.feat); save(); openEditor('featured'); render(); return; }
-  if (d.delvid) { S.videos.splice(+d.delvid,1); save(); openEditor('videos'); return; }
+  if (d.delvid) { S.videos.splice(+d.delvid,1); save(); inWiz ? wizRender() : openEditor('videos'); return; }
   if (d.delshow) { S.shows = S.shows.filter(s=>s.id!=d.delshow); save(); openEditor('shows'); return; }
   if (d.on) { const [kind, id] = d.on.split(':');
     if (kind === 'clr') { S.theme = id; save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : render(); return; }
@@ -685,10 +690,13 @@ document.addEventListener('click', e => {
       S.domain = v; S.domainStatus = 'requested'; save(); render(); toast('Domain requested'); return; }
     case 'rmdomain': S.domain = null; S.domainStatus = null; save(); render(); return;
     case 'addarea': { const v = document.getElementById(d.in).value.trim(); if (!v) return; S.areas = [...areaList(), v].join(', '); save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('hero'); return; }
-    case 'addsvc': { const i = document.getElementById('f-cust'), v = i.value.trim(); if (v) { S.custom.push(v); save(); openEditor('services'); } return; }
+    case 'addsvc': { const i = document.getElementById('f-cust'), v = i.value.trim(); if (v) { S.custom.push(v); save(); inWiz ? wizRender() : openEditor('services'); } return; }
     case 'addvid': { const i = document.getElementById('f-vid'), m = i.value.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
       if (!m) { toast('Paste a YouTube link'); return; } if (S.videos.length >= 6) { toast('Up to 6 videos'); return; }
-      S.videos.push({url:'https://youtu.be/'+m[1],title:'New video'}); save(); openEditor('videos'); return; }
+      S.videos.push({url:'https://youtu.be/'+m[1],title:'New video'}); save(); inWiz ? wizRender() : openEditor('videos'); return; }
+    case 'photolink': { const v = document.getElementById('f-pl-'+d.boat).value.trim();
+      if (!/^https:\/\/(drive\.google\.com|www\.dropbox\.com|dropbox\.com)\//.test(v)) { toast('Paste a Google Drive or Dropbox link.'); return; }
+      S.boats.find(b=>b.id==d.boat).photos = 'queued'; save(); wizRender(); toast('Link added. Photos are in line.'); return; }
     case 'bio': S.bio = `I have sold boats in South Florida since 2018, with 120 sales from 40 to 90 feet. I know Azimut, Sunseeker and Princess inside out, and I walk every boat I list in person. Owners pick me because I price from real sold data, run every showing myself and handle the survey, paperwork and closing so the sale stays calm.`;
       save(); inWiz ? document.getElementById('layer').innerHTML = setupView() : openEditor('about'); toast('Draft added. Make it yours.'); return;
     case 'preview': {
